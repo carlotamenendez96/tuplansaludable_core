@@ -17,7 +17,8 @@ import {
   notFoundHandler,
   requestLogger,
   validateContentType,
-  sanitizeInput
+  sanitizeInput,
+  resetRateLimit
 } from './middleware/security';
 
 // Importar rutas
@@ -103,6 +104,9 @@ app.get('/api/health', (req, res) => {
     }
   });
 });
+
+// Ruta para resetear rate limiting (solo en desarrollo)
+app.post('/api/dev/reset-rate-limit', resetRateLimit);
 
 // Rutas de la API
 app.use('/api/auth', authRoutes);

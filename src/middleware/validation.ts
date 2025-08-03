@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import Joi from 'joi';
-import { UserRole, ActivityLevel, Goal, MealType, ExerciseType } from '../types';
+import { UserRole, ActivityLevel, Goal, MealType, ExerciseType, WorkoutCategory } from '../types';
 
 /**
  * Middleware genérico para validar datos usando Joi
@@ -281,6 +281,7 @@ const mealSchema = Joi.object({
     food: foodSchema.required(),
     quantity: Joi.number().min(1).required()
   })).min(1).required(),
+  totalCalories: Joi.number().min(0).required(),
   notes: Joi.string().trim().max(500).optional()
 });
 
@@ -324,6 +325,7 @@ const workoutExerciseSchema = Joi.object({
 
 const workoutSchema = Joi.object({
   name: Joi.string().trim().min(1).max(100).required(),
+  category: Joi.string().valid(...Object.values(WorkoutCategory)).required(),
   exercises: Joi.array().items(workoutExerciseSchema).min(1).required(),
   estimatedDuration: Joi.number().min(5).max(300).required(),
   difficulty: Joi.string().valid('beginner', 'intermediate', 'advanced').default('beginner'),

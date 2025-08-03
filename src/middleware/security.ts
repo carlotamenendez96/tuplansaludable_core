@@ -61,7 +61,7 @@ export const helmetConfig = helmet({
  */
 export const generalLimiter = rateLimit({
   windowMs: parseInt(process.env.RATE_LIMIT_WINDOW_MS || '900000'), // 15 minutos
-  max: parseInt(process.env.RATE_LIMIT_MAX_REQUESTS || '100'), // 100 requests por ventana
+  max: process.env.NODE_ENV === 'development' ? 1000 : parseInt(process.env.RATE_LIMIT_MAX_REQUESTS || '100'), // Más permisivo en desarrollo
   message: {
     success: false,
     message: 'Demasiadas solicitudes, intenta de nuevo más tarde',
@@ -80,7 +80,7 @@ export const generalLimiter = rateLimit({
  */
 export const authLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutos
-  max: 5, // 5 intentos de login por IP
+  max: process.env.NODE_ENV === 'development' ? 50 : 5, // Más permisivo en desarrollo
   message: {
     success: false,
     message: 'Demasiados intentos de autenticación, intenta de nuevo en 15 minutos',
@@ -96,7 +96,7 @@ export const authLimiter = rateLimit({
  */
 export const createLimiter = rateLimit({
   windowMs: 60 * 1000, // 1 minuto
-  max: 10, // 10 creaciones por minuto
+  max: process.env.NODE_ENV === 'development' ? 100 : 10, // Más permisivo en desarrollo
   message: {
     success: false,
     message: 'Demasiadas creaciones, intenta de nuevo en un minuto',
@@ -270,7 +270,10 @@ export const requestLogger = (req: Request, res: Response, next: NextFunction): 
         console.log('Request:', logData);
       }
     } else {
-      console.log('Request:', logData);
+      // En desarrollo, solo loggear requests que no sean 304 (Not Modified)
+      if (res.statusCode !== 304) {
+        console.log('Request:', logData);
+      }
     }
   });
 
@@ -349,5 +352,40 @@ export const sanitizeInput = (req: Request, res: Response, next: NextFunction): 
   }
 
   next();
+};
+
+/**
+ * Función para resetear rate limiting (solo en desarrollo)
+ */
+export const resetRateLimit = (req: Request, res: Response): void => {
+  if (process.env.NODE_ENV !== 'development') {
+    res.status(403).json({
+      success: false,
+      message: 'Esta función solo está disponible en desarrollo',
+      error: 'DEVELOPMENT_ONLY'
+    });
+    return;
+  }
+
+  // Resetear los rate limiters
+  const clientIp = req.ip || req.connection.remoteAddress || 'unknown';
+  if (authLimiter.resetKey) {
+    authLimiter.resetKey(clientIp);
+  }
+  if (generalLimiter.resetKey) {
+    generalLimiter.resetKey(clientIp);
+  }
+  if (createLimiter.resetKey) {
+    createLimiter.resetKey(clientIp);
+  }
+
+  res.status(200).json({
+    success: true,
+    message: 'Rate limiting reseteado exitosamente',
+    data: {
+      ip: req.ip,
+      timestamp: new Date().toISOString()
+    }
+  });
 };
 

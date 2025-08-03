@@ -1,0 +1,492 @@
+{
+  "_id": {
+    "$oid": "68812787d6a07da255dfc991"
+  },
+  "userId": {
+    "$oid": "68812786d6a07da255dfc97c"
+  },
+  "trainerId": {
+    "$oid": "68812786d6a07da255dfc973"
+  },
+  "title": "Plan de Entrenamiento Avanzado con Categorías",
+  "description": "Plan de entrenamiento que utiliza las nuevas categorías para una mejor organización de los ejercicios por zona del cuerpo",
+  "workouts": [
+    {
+      "name": "Cardio HIIT Intenso",
+      "category": "CARDIO",
+      "exercises": [
+        {
+          "exercise": {
+            "name": "Burpees",
+            "type": "CARDIO",
+            "description": "Ejercicio completo que combina fuerza y cardio",
+            "instructions": [
+              "Ponte de pie",
+              "Baja a posición de sentadilla",
+              "Coloca las manos en el suelo",
+              "Salta hacia atrás a posición de plancha",
+              "Haz una flexión",
+              "Salta hacia adelante",
+              "Salta hacia arriba"
+            ],
+            "targetMuscles": ["Todo el cuerpo", "Cardio"],
+            "equipment": ["Peso corporal"],
+            "difficulty": "intermediate"
+          },
+          "sets": [
+            {
+              "reps": 10,
+              "restTime": 60
+            },
+            {
+              "reps": 10,
+              "restTime": 60
+            },
+            {
+              "reps": 8,
+              "restTime": 60
+            }
+          ],
+          "notes": "Ejercicio intenso, mantén la técnica"
+        },
+        {
+          "exercise": {
+            "name": "Mountain climbers",
+            "type": "CARDIO",
+            "description": "Ejercicio dinámico para cardio y core",
+            "instructions": [
+              "Colócate en posición de plancha",
+              "Lleva una rodilla hacia el pecho",
+              "Alterna rápidamente entre piernas"
+            ],
+            "targetMuscles": ["Core", "Cardio"],
+            "equipment": ["Peso corporal"],
+            "difficulty": "intermediate"
+          },
+          "sets": [
+            {
+              "duration": 45,
+              "restTime": 45
+            },
+            {
+              "duration": 45,
+              "restTime": 45
+            },
+            {
+              "duration": 45,
+              "restTime": 45
+            }
+          ],
+          "notes": "Mantén el core activo"
+        }
+      ],
+      "estimatedDuration": 30,
+      "difficulty": "intermediate",
+      "notes": "Entrenamiento cardio de alta intensidad"
+    },
+    {
+      "name": "Tren Superior 1 - Pecho y Hombros",
+      "category": "STRENGTH_UPPER_1",
+      "exercises": [
+        {
+          "exercise": {
+            "name": "Press de banca",
+            "type": "STRENGTH",
+            "description": "Ejercicio fundamental para pecho",
+            "instructions": [
+              "Acuéstate en el banco",
+              "Agarra la barra con las manos separadas al ancho de los hombros",
+              "Baja la barra al pecho",
+              "Empuja hacia arriba"
+            ],
+            "targetMuscles": ["Pecho", "Hombros", "Tríceps"],
+            "equipment": ["Barra", "Banco", "Pesas"],
+            "difficulty": "intermediate"
+          },
+          "sets": [
+            {
+              "reps": 8,
+              "weight": 60,
+              "restTime": 120
+            },
+            {
+              "reps": 8,
+              "weight": 60,
+              "restTime": 120
+            },
+            {
+              "reps": 6,
+              "weight": 65,
+              "restTime": 120
+            }
+          ],
+          "notes": "Enfócate en la técnica correcta"
+        },
+        {
+          "exercise": {
+            "name": "Press militar",
+            "type": "STRENGTH",
+            "description": "Ejercicio para hombros",
+            "instructions": [
+              "De pie con la barra a la altura de los hombros",
+              "Empuja la barra hacia arriba",
+              "Baja controladamente"
+            ],
+            "targetMuscles": ["Hombros", "Tríceps"],
+            "equipment": ["Barra", "Pesas"],
+            "difficulty": "intermediate"
+          },
+          "sets": [
+            {
+              "reps": 10,
+              "weight": 40,
+              "restTime": 90
+            },
+            {
+              "reps": 10,
+              "weight": 40,
+              "restTime": 90
+            },
+            {
+              "reps": 8,
+              "weight": 45,
+              "restTime": 90
+            }
+          ],
+          "notes": "Mantén la espalda recta"
+        }
+      ],
+      "estimatedDuration": 45,
+      "difficulty": "intermediate",
+      "notes": "Entrenamiento de pecho y hombros"
+    },
+    {
+      "name": "Tren Superior 2 - Espalda y Bíceps",
+      "category": "STRENGTH_UPPER_2",
+      "exercises": [
+        {
+          "exercise": {
+            "name": "Dominadas",
+            "type": "STRENGTH",
+            "description": "Ejercicio para espalda y bíceps",
+            "instructions": [
+              "Cuelga de la barra con las manos separadas al ancho de los hombros",
+              "Tira hacia arriba hasta que la barbilla pase la barra",
+              "Baja controladamente"
+            ],
+            "targetMuscles": ["Espalda", "Bíceps"],
+            "equipment": ["Barra de dominadas"],
+            "difficulty": "intermediate"
+          },
+          "sets": [
+            {
+              "reps": 8,
+              "restTime": 120
+            },
+            {
+              "reps": 6,
+              "restTime": 120
+            },
+            {
+              "reps": 5,
+              "restTime": 120
+            }
+          ],
+          "notes": "Si no puedes hacer dominadas, usa bandas de resistencia"
+        },
+        {
+          "exercise": {
+            "name": "Remo con barra",
+            "type": "STRENGTH",
+            "description": "Ejercicio para espalda",
+            "instructions": [
+              "Inclínate hacia adelante con la barra en las manos",
+              "Tira la barra hacia el pecho",
+              "Baja controladamente"
+            ],
+            "targetMuscles": ["Espalda", "Bíceps"],
+            "equipment": ["Barra", "Pesas"],
+            "difficulty": "intermediate"
+          },
+          "sets": [
+            {
+              "reps": 10,
+              "weight": 50,
+              "restTime": 90
+            },
+            {
+              "reps": 10,
+              "weight": 50,
+              "restTime": 90
+            },
+            {
+              "reps": 8,
+              "weight": 55,
+              "restTime": 90
+            }
+          ],
+          "notes": "Mantén la espalda recta"
+        }
+      ],
+      "estimatedDuration": 45,
+      "difficulty": "intermediate",
+      "notes": "Entrenamiento de espalda y bíceps"
+    },
+    {
+      "name": "Tren Inferior 1 - Cuádriceps",
+      "category": "STRENGTH_LOWER_1",
+      "exercises": [
+        {
+          "exercise": {
+            "name": "Sentadillas con barra",
+            "type": "STRENGTH",
+            "description": "Ejercicio fundamental para piernas",
+            "instructions": [
+              "Coloca la barra en los hombros",
+              "Ponte de pie con los pies separados al ancho de los hombros",
+              "Baja como si te sentaras",
+              "Vuelve a la posición inicial"
+            ],
+            "targetMuscles": ["Cuádriceps", "Glúteos", "Isquiotibiales"],
+            "equipment": ["Barra", "Pesas"],
+            "difficulty": "intermediate"
+          },
+          "sets": [
+            {
+              "reps": 8,
+              "weight": 80,
+              "restTime": 120
+            },
+            {
+              "reps": 8,
+              "weight": 80,
+              "restTime": 120
+            },
+            {
+              "reps": 6,
+              "weight": 85,
+              "restTime": 120
+            }
+          ],
+          "notes": "Mantén las rodillas alineadas con los pies"
+        },
+        {
+          "exercise": {
+            "name": "Press de piernas",
+            "type": "STRENGTH",
+            "description": "Ejercicio para cuádriceps",
+            "instructions": [
+              "Siéntate en la máquina",
+              "Coloca los pies en la plataforma",
+              "Empuja hacia adelante",
+              "Baja controladamente"
+            ],
+            "targetMuscles": ["Cuádriceps", "Glúteos"],
+            "equipment": ["Máquina de press de piernas"],
+            "difficulty": "intermediate"
+          },
+          "sets": [
+            {
+              "reps": 12,
+              "weight": 100,
+              "restTime": 90
+            },
+            {
+              "reps": 12,
+              "weight": 100,
+              "restTime": 90
+            },
+            {
+              "reps": 10,
+              "weight": 110,
+              "restTime": 90
+            }
+          ],
+          "notes": "No bloquees las rodillas"
+        }
+      ],
+      "estimatedDuration": 40,
+      "difficulty": "intermediate",
+      "notes": "Entrenamiento de cuádriceps"
+    },
+    {
+      "name": "Tren Inferior 2 - Isquiotibiales y Core",
+      "category": "STRENGTH_LOWER_2",
+      "exercises": [
+        {
+          "exercise": {
+            "name": "Peso muerto",
+            "type": "STRENGTH",
+            "description": "Ejercicio para isquiotibiales y espalda",
+            "instructions": [
+              "Ponte de pie con la barra en el suelo",
+              "Inclínate hacia adelante desde las caderas",
+              "Agarra la barra",
+              "Levántate manteniendo la espalda recta"
+            ],
+            "targetMuscles": ["Isquiotibiales", "Espalda", "Glúteos"],
+            "equipment": ["Barra", "Pesas"],
+            "difficulty": "intermediate"
+          },
+          "sets": [
+            {
+              "reps": 8,
+              "weight": 70,
+              "restTime": 120
+            },
+            {
+              "reps": 8,
+              "weight": 70,
+              "restTime": 120
+            },
+            {
+              "reps": 6,
+              "weight": 75,
+              "restTime": 120
+            }
+          ],
+          "notes": "Mantén la espalda recta en todo momento"
+        },
+        {
+          "exercise": {
+            "name": "Plancha",
+            "type": "STRENGTH",
+            "description": "Ejercicio isométrico para core",
+            "instructions": [
+              "Colócate en posición de plancha",
+              "Mantén el cuerpo recto de la cabeza a los pies",
+              "Aguanta la posición"
+            ],
+            "targetMuscles": ["Core", "Abdominales", "Lumbares"],
+            "equipment": ["Peso corporal"],
+            "difficulty": "intermediate"
+          },
+          "sets": [
+            {
+              "duration": 60,
+              "restTime": 60
+            },
+            {
+              "duration": 60,
+              "restTime": 60
+            },
+            {
+              "duration": 60,
+              "restTime": 60
+            }
+          ],
+          "notes": "Mantén la respiración constante"
+        }
+      ],
+      "estimatedDuration": 40,
+      "difficulty": "intermediate",
+      "notes": "Entrenamiento de isquiotibiales y core"
+    },
+    {
+      "name": "Flexibilidad y Movilidad",
+      "category": "FLEXIBILITY",
+      "exercises": [
+        {
+          "exercise": {
+            "name": "Estiramiento de isquiotibiales",
+            "type": "FLEXIBILITY",
+            "description": "Estiramiento para la parte posterior de las piernas",
+            "instructions": [
+              "Siéntate en el suelo con las piernas extendidas",
+              "Inclínate hacia adelante desde las caderas",
+              "Mantén la posición por 30 segundos"
+            ],
+            "targetMuscles": ["Isquiotibiales"],
+            "equipment": ["Ninguno"],
+            "difficulty": "beginner"
+          },
+          "sets": [
+            {
+              "duration": 30,
+              "restTime": 30
+            },
+            {
+              "duration": 30,
+              "restTime": 30
+            }
+          ],
+          "notes": "No rebotes, mantén el estiramiento suave"
+        },
+        {
+          "exercise": {
+            "name": "Estiramiento de hombros",
+            "type": "FLEXIBILITY",
+            "description": "Estiramiento para mejorar la movilidad de hombros",
+            "instructions": [
+              "Lleva un brazo hacia el pecho",
+              "Usa el otro brazo para presionar suavemente",
+              "Mantén la posición por 30 segundos"
+            ],
+            "targetMuscles": ["Hombros", "Pecho"],
+            "equipment": ["Ninguno"],
+            "difficulty": "beginner"
+          },
+          "sets": [
+            {
+              "duration": 30,
+              "restTime": 30
+            },
+            {
+              "duration": 30,
+              "restTime": 30
+            }
+          ],
+          "notes": "Estiramiento suave para mejorar la movilidad"
+        }
+      ],
+      "estimatedDuration": 20,
+      "difficulty": "beginner",
+      "notes": "Sesión de flexibilidad para recuperación"
+    }
+  ],
+  "schedule": [
+    {
+      "dayOfWeek": 1,
+      "workoutIndex": 1
+    },
+    {
+      "dayOfWeek": 2,
+      "workoutIndex": 0
+    },
+    {
+      "dayOfWeek": 3,
+      "workoutIndex": 2
+    },
+    {
+      "dayOfWeek": 4,
+      "workoutIndex": 3
+    },
+    {
+      "dayOfWeek": 5,
+      "workoutIndex": 0
+    },
+    {
+      "dayOfWeek": 6,
+      "workoutIndex": 4
+    },
+    {
+      "dayOfWeek": 0,
+      "workoutIndex": 5
+    }
+  ],
+  "startDate": {
+    "$date": "2025-01-23T18:18:47.062Z"
+  },
+  "endDate": {
+    "$date": "2025-02-22T18:18:47.062Z"
+  },
+  "isActive": true,
+  "notes": "Plan avanzado con categorías específicas por zona del cuerpo",
+  "createdAt": {
+    "$date": "2025-01-23T18:18:47.063Z"
+  },
+  "updatedAt": {
+    "$date": "2025-01-23T18:18:47.063Z"
+  },
+  "__v": 0
+} 

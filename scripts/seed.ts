@@ -37,6 +37,12 @@ async function seed() {
     isActive: true
   });
 
+  // Actualizar la lista de clientes del entrenador
+  await User.findByIdAndUpdate(
+    trainer._id,
+    { $addToSet: { clients: client._id } }
+  );
+
   // Crea un plan de dieta de ejemplo
   await DietPlan.create({
     userId: client._id,

@@ -1,6 +1,6 @@
 // Script para verificar el estado del cliente
 const BASE_URL = 'http://localhost:5000/api';
-const CLIENT_ID = '68812786d6a07da255dfc973';
+const CLIENT_ID = '68812786d6a07da255dfc97c';
 
 // Credenciales del entrenador
 const TRAINER_CREDENTIALS = {

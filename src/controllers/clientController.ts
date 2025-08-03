@@ -85,11 +85,31 @@ export const getClients = async (req: Request, res: Response): Promise<void> => 
           WorkoutPlan.findOne({ userId: typedClient._id, isActive: true }).select('title').lean()
         ]);
 
+        // Calcular fullName, age y bmi manualmente ya que estamos usando .lean()
+        const fullName = `${typedClient.firstName || ''} ${typedClient.lastName || ''}`.trim();
+        
+        let age = null;
+        if (typedClient.dateOfBirth) {
+          const today = new Date();
+          const birthDate = new Date(typedClient.dateOfBirth);
+          age = today.getFullYear() - birthDate.getFullYear();
+          const monthDiff = today.getMonth() - birthDate.getMonth();
+          if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+            age--;
+          }
+        }
+        
+        let bmi = null;
+        if (typedClient.weight && typedClient.height) {
+          const heightInMeters = typedClient.height / 100;
+          bmi = (typedClient.weight / (heightInMeters * heightInMeters)).toFixed(1);
+        }
+
         return {
           ...typedClient,
-          fullName: typedClient.getFullName(),
-          age: typedClient.getAge(),
-          bmi: typedClient.getBMI(),
+          fullName,
+          age,
+          bmi,
           lastProgress,
           activePlans: {
             diet: activeDietPlan?.title || null,
@@ -210,12 +230,32 @@ export const getClientById = async (req: Request, res: Response): Promise<void> 
       }
     ]);
 
+    // Calcular fullName, age y bmi manualmente ya que estamos usando .lean()
+    const fullName = `${typedClient.firstName || ''} ${typedClient.lastName || ''}`.trim();
+    
+    let age = null;
+    if (typedClient.dateOfBirth) {
+      const today = new Date();
+      const birthDate = new Date(typedClient.dateOfBirth);
+      age = today.getFullYear() - birthDate.getFullYear();
+      const monthDiff = today.getMonth() - birthDate.getMonth();
+      if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+        age--;
+      }
+    }
+    
+    let bmi = null;
+    if (typedClient.weight && typedClient.height) {
+      const heightInMeters = typedClient.height / 100;
+      bmi = (typedClient.weight / (heightInMeters * heightInMeters)).toFixed(1);
+    }
+
     // Preparar respuesta
     const clientDetails = {
       ...typedClient,
-      fullName: typedClient.getFullName(),
-      age: typedClient.getAge(),
-      bmi: typedClient.getBMI(),
+      fullName,
+      age,
+      bmi,
       activePlans: {
         diet: activeDietPlan,
         workout: activeWorkoutPlan

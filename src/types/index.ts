@@ -30,6 +30,33 @@ export enum ExerciseType {
   SPORTS = 'SPORTS'
 }
 
+// New enum for workout categories
+export enum WorkoutCategory {
+  CARDIO = 'CARDIO',
+  STRENGTH_UPPER_1 = 'STRENGTH_UPPER_1',
+  STRENGTH_UPPER_2 = 'STRENGTH_UPPER_2',
+  STRENGTH_LOWER_1 = 'STRENGTH_LOWER_1',
+  STRENGTH_LOWER_2 = 'STRENGTH_LOWER_2',
+  FLEXIBILITY = 'FLEXIBILITY'
+}
+
+// New enum for muscle groups to better categorize exercises
+export enum MuscleGroup {
+  CHEST = 'CHEST',
+  BACK = 'BACK',
+  SHOULDERS = 'SHOULDERS',
+  BICEPS = 'BICEPS',
+  TRICEPS = 'TRICEPS',
+  FOREARMS = 'FOREARMS',
+  QUADRICEPS = 'QUADRICEPS',
+  HAMSTRINGS = 'HAMSTRINGS',
+  GLUTES = 'GLUTES',
+  CALVES = 'CALVES',
+  CORE = 'CORE',
+  CARDIO = 'CARDIO',
+  FULL_BODY = 'FULL_BODY'
+}
+
 export enum MealType {
   BREAKFAST = 'BREAKFAST',
   LUNCH = 'LUNCH',
@@ -131,6 +158,7 @@ export interface IWorkoutExercise {
 
 export interface IWorkout {
   name: string;
+  category: WorkoutCategory; // New field for workout categorization
   exercises: IWorkoutExercise[];
   estimatedDuration: number; // in minutes
   difficulty: 'beginner' | 'intermediate' | 'advanced';

@@ -1,7 +1,7 @@
 // Configuración
 const BASE_URL = 'http://localhost:5000/api';
-const CLIENT_ID = '68812786d6a07da255dfc973';
-const TRAINER_ID = '68812786d6a07da255dfc973'; // Mismo ID para este ejemplo
+const CLIENT_ID = '68812786d6a07da255dfc97c';
+const TRAINER_ID = '68812786d6a07da255dfc973'; // ID del entrenador
 
 // Datos de autenticación del entrenador
 const TRAINER_CREDENTIALS = {

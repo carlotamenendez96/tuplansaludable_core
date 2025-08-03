@@ -1,5 +1,5 @@
 import { Schema, model } from 'mongoose';
-import { IWorkoutPlan, IExercise, IWorkoutSet, IWorkoutExercise, IWorkout, ExerciseType } from '../types';
+import { IWorkoutPlan, IExercise, IWorkoutSet, IWorkoutExercise, IWorkout, ExerciseType, WorkoutCategory } from '../types';
 
 const exerciseSchema = new Schema<IExercise>({
   name: {
@@ -85,6 +85,11 @@ const workoutSchema = new Schema<IWorkout>({
     trim: true,
     maxlength: [100, 'El nombre no puede exceder 100 caracteres']
   },
+  category: {
+    type: String,
+    enum: Object.values(WorkoutCategory),
+    required: [true, 'La categoría del entrenamiento es requerida']
+  },
   exercises: [{
     type: workoutExerciseSchema,
     required: [true, 'Al menos un ejercicio es requerido']
@@ -106,7 +111,7 @@ const workoutSchema = new Schema<IWorkout>({
     trim: true,
     maxlength: [500, 'Las notas no pueden exceder 500 caracteres']
   }
-}, { _id: false });
+}, { _id: true });
 
 const workoutPlanSchema = new Schema<IWorkoutPlan>({
   userId: {
@@ -198,14 +203,14 @@ workoutPlanSchema.virtual('durationDays').get(function() {
 
 // Virtual for total exercises count
 workoutPlanSchema.virtual('totalExercises').get(function() {
-  return this.workouts.reduce((total, workout) => total + workout.exercises.length, 0);
+  return this.workouts.reduce((total: number, workout: IWorkout) => total + workout.exercises.length, 0);
 });
 
 // Virtual for average workout duration
 workoutPlanSchema.virtual('averageWorkoutDuration').get(function() {
   if (this.workouts.length === 0) return 0;
   
-  const totalDuration = this.workouts.reduce((total, workout) => total + workout.estimatedDuration, 0);
+  const totalDuration = this.workouts.reduce((total: number, workout: IWorkout) => total + workout.estimatedDuration, 0);
   return Math.round(totalDuration / this.workouts.length);
 });
 
@@ -213,15 +218,47 @@ workoutPlanSchema.virtual('averageWorkoutDuration').get(function() {
 workoutPlanSchema.virtual('targetedMuscleGroups').get(function() {
   const muscleGroups = new Set<string>();
   
-  this.workouts.forEach(workout => {
-    workout.exercises.forEach(exercise => {
-      exercise.exercise.targetMuscles.forEach(muscle => {
+  this.workouts.forEach((workout: IWorkout) => {
+    workout.exercises.forEach((exercise: IWorkoutExercise) => {
+      exercise.exercise.targetMuscles.forEach((muscle: string) => {
         muscleGroups.add(muscle.toLowerCase());
       });
     });
   });
   
   return Array.from(muscleGroups);
+});
+
+// Virtual for workout categories in the plan
+workoutPlanSchema.virtual('workoutCategories').get(function() {
+  const categories = new Set<string>();
+  
+  this.workouts.forEach((workout: IWorkout) => {
+    categories.add(workout.category);
+  });
+  
+  return Array.from(categories);
+});
+
+// Virtual for strength workouts count
+workoutPlanSchema.virtual('strengthWorkoutsCount').get(function() {
+  return this.workouts.filter((workout: IWorkout) => 
+    workout.category.startsWith('STRENGTH_')
+  ).length;
+});
+
+// Virtual for cardio workouts count
+workoutPlanSchema.virtual('cardioWorkoutsCount').get(function() {
+  return this.workouts.filter((workout: IWorkout) => 
+    workout.category === 'CARDIO'
+  ).length;
+});
+
+// Virtual for flexibility workouts count
+workoutPlanSchema.virtual('flexibilityWorkoutsCount').get(function() {
+  return this.workouts.filter((workout: IWorkout) => 
+    workout.category === 'FLEXIBILITY'
+  ).length;
 });
 
 // Pre-validate middleware to check schedule workout indexes
@@ -262,7 +299,7 @@ workoutPlanSchema.methods.isCurrent = function(): boolean {
 
 // Instance method to get workout for specific day
 workoutPlanSchema.methods.getWorkoutForDay = function(dayOfWeek: number): IWorkout | null {
-  const scheduleItem = this.schedule.find((item: { dayOfWeek: number; }) => item.dayOfWeek === dayOfWeek);
+  const scheduleItem = this.schedule.find((item: { dayOfWeek: number; workoutIndex: number; }) => item.dayOfWeek === dayOfWeek);
   
   if (!scheduleItem || scheduleItem.workoutIndex >= this.workouts.length) {
     return null;
@@ -279,10 +316,42 @@ workoutPlanSchema.methods.getTodaysWorkout = function(): IWorkout | null {
 
 // Instance method to calculate total weekly duration
 workoutPlanSchema.methods.getWeeklyDuration = function(): number {
-  return this.schedule.reduce((total: number, scheduleItem: { workoutIndex: number; }) => {
+  return this.schedule.reduce((total: number, scheduleItem: { dayOfWeek: number; workoutIndex: number; }) => {
     const workout = this.workouts[scheduleItem.workoutIndex];
     return total + (workout ? workout.estimatedDuration : 0);
   }, 0);
+};
+
+// Instance method to get workouts by category
+workoutPlanSchema.methods.getWorkoutsByCategory = function(category: string): IWorkout[] {
+  return this.workouts.filter((workout: IWorkout) => workout.category === category);
+};
+
+// Instance method to get strength workouts
+workoutPlanSchema.methods.getStrengthWorkouts = function(): IWorkout[] {
+  return this.workouts.filter((workout: IWorkout) => workout.category.startsWith('STRENGTH_'));
+};
+
+// Instance method to get cardio workouts
+workoutPlanSchema.methods.getCardioWorkouts = function(): IWorkout[] {
+  return this.workouts.filter((workout: IWorkout) => workout.category === 'CARDIO');
+};
+
+// Instance method to get flexibility workouts
+workoutPlanSchema.methods.getFlexibilityWorkouts = function(): IWorkout[] {
+  return this.workouts.filter((workout: IWorkout) => workout.category === 'FLEXIBILITY');
+};
+
+// Instance method to get workout for specific day and category
+workoutPlanSchema.methods.getWorkoutForDayAndCategory = function(dayOfWeek: number, category: string): IWorkout | null {
+  const scheduleItem = this.schedule.find((item: { dayOfWeek: number; workoutIndex: number; }) => item.dayOfWeek === dayOfWeek);
+  
+  if (!scheduleItem || scheduleItem.workoutIndex >= this.workouts.length) {
+    return null;
+  }
+  
+  const workout = this.workouts[scheduleItem.workoutIndex];
+  return workout.category === category ? workout : null;
 };
 
 export const WorkoutPlan = model<IWorkoutPlan>('WorkoutPlan', workoutPlanSchema);
