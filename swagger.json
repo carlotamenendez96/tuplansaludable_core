@@ -1,0 +1,5044 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Tu Plan Saludable API",
+    "description": "API completa para la gestión de planes de dieta, entrenamiento y seguimiento de progreso. Permite a entrenadores crear y gestionar planes personalizados para sus clientes, así como el seguimiento del progreso y comunicación entre usuarios.",
+    "version": "1.0.0",
+    "contact": {
+      "name": "Tu Plan Saludable",
+      "email": "support@tuplansaludable.com"
+    },
+    "license": {
+      "name": "MIT",
+      "url": "https://opensource.org/licenses/MIT"
+    }
+  },
+  "servers": [
+    {
+      "url": "http://localhost:5000",
+      "description": "Servidor de desarrollo"
+    },
+    {
+      "url": "https://api.tuplansaludable.com",
+      "description": "Servidor de producción"
+    }
+  ],
+  "paths": {
+    "/health": {
+      "get": {
+        "tags": ["Health"],
+        "summary": "Verificar estado del servidor",
+        "description": "Endpoint para verificar que el servidor está funcionando correctamente",
+        "responses": {
+          "200": {
+            "description": "Servidor funcionando correctamente",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Servidor funcionando correctamente"
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "status": {
+                          "type": "string",
+                          "example": "healthy"
+                        },
+                        "timestamp": {
+                          "type": "string",
+                          "format": "date-time"
+                        },
+                        "uptime": {
+                          "type": "number"
+                        },
+                        "environment": {
+                          "type": "string",
+                          "example": "development"
+                        },
+                        "version": {
+                          "type": "string",
+                          "example": "1.0.0"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/health": {
+      "get": {
+        "tags": ["Health"],
+        "summary": "Verificar estado de la API",
+        "description": "Endpoint para verificar el estado completo de la API incluyendo base de datos y WebSocket",
+        "responses": {
+          "200": {
+            "description": "API funcionando correctamente",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "API funcionando correctamente"
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "status": {
+                          "type": "string",
+                          "example": "healthy"
+                        },
+                        "timestamp": {
+                          "type": "string",
+                          "format": "date-time"
+                        },
+                        "uptime": {
+                          "type": "number"
+                        },
+                        "environment": {
+                          "type": "string",
+                          "example": "development"
+                        },
+                        "version": {
+                          "type": "string",
+                          "example": "1.0.0"
+                        },
+                        "database": {
+                          "type": "string",
+                          "example": "connected"
+                        },
+                        "websocket": {
+                          "type": "string",
+                          "example": "active"
+                        },
+                        "connectedUsers": {
+                          "type": "number",
+                          "example": 5
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/auth/login": {
+      "post": {
+        "tags": ["Auth"],
+        "summary": "Autenticar usuario",
+        "description": "Autenticar usuario con email y contraseña para obtener token JWT",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LoginRequest"
+              },
+              "examples": {
+                "trainer": {
+                  "summary": "Login de entrenador",
+                  "value": {
+                    "email": "trainer@example.com",
+                    "password": "password123"
+                  }
+                },
+                "client": {
+                  "summary": "Login de cliente",
+                  "value": {
+                    "email": "client@example.com",
+                    "password": "password123"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Login exitoso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LoginResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Datos inválidos",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Credenciales inválidas",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Demasiadas solicitudes",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/auth/register": {
+      "post": {
+        "tags": ["Auth"],
+        "summary": "Registrar nuevo usuario",
+        "description": "Crear una nueva cuenta de usuario",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RegisterRequest"
+              },
+              "example": {
+                "email": "nuevo@ejemplo.com",
+                "password": "Contraseña123",
+                "firstName": "Juan",
+                "lastName": "Pérez",
+                "role": "USER",
+                "dateOfBirth": "1990-01-01",
+                "gender": "male",
+                "height": 175,
+                "weight": 70,
+                "activityLevel": "MODERATELY_ACTIVE",
+                "goals": ["LOSE_WEIGHT", "BUILD_MUSCLE"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Usuario registrado exitosamente",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LoginResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Datos inválidos",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Email ya existe",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Demasiadas solicitudes",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/auth/me": {
+      "get": {
+        "tags": ["Auth"],
+        "summary": "Obtener información del usuario autenticado",
+        "description": "Obtener información del usuario actualmente autenticado",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Información del usuario",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Información del usuario obtenida"
+                    },
+                    "data": {
+                      "$ref": "#/components/schemas/User"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "No autenticado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": ["Auth"],
+        "summary": "Actualizar información del usuario",
+        "description": "Actualizar información del usuario autenticado",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateUserRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Usuario actualizado exitosamente",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Usuario actualizado exitosamente"
+                    },
+                    "data": {
+                      "$ref": "#/components/schemas/User"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Datos inválidos",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "No autenticado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/auth/change-password": {
+      "put": {
+        "tags": ["Auth"],
+        "summary": "Cambiar contraseña",
+        "description": "Cambiar la contraseña del usuario autenticado",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ChangePasswordRequest"
+              },
+              "example": {
+                "currentPassword": "ContraseñaActual123",
+                "newPassword": "NuevaContraseña456"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Contraseña cambiada exitosamente",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Datos inválidos",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "No autenticado o contraseña actual incorrecta",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Demasiadas solicitudes",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse"
+                }
+              }
+            }
+          }
+                 }
+       }
+     },
+     "/api/clients": {
+       "get": {
+         "tags": ["Clients"],
+         "summary": "Obtener lista de clientes",
+         "description": "Obtener lista paginada de clientes del entrenador autenticado",
+         "security": [
+           {
+             "bearerAuth": []
+           }
+         ],
+         "parameters": [
+           {
+             "name": "page",
+             "in": "query",
+             "description": "Número de página",
+             "required": false,
+             "schema": {
+               "type": "number",
+               "default": 1,
+               "minimum": 1
+             }
+           },
+           {
+             "name": "limit",
+             "in": "query",
+             "description": "Número de elementos por página",
+             "required": false,
+             "schema": {
+               "type": "number",
+               "default": 10,
+               "minimum": 1,
+               "maximum": 50
+             }
+           },
+           {
+             "name": "search",
+             "in": "query",
+             "description": "Término de búsqueda",
+             "required": false,
+             "schema": {
+               "type": "string"
+             }
+           },
+           {
+             "name": "sortBy",
+             "in": "query",
+             "description": "Campo para ordenar",
+             "required": false,
+             "schema": {
+               "type": "string",
+               "enum": ["createdAt", "firstName", "lastName", "email"],
+               "default": "createdAt"
+             }
+           },
+           {
+             "name": "sortOrder",
+             "in": "query",
+             "description": "Orden de clasificación",
+             "required": false,
+             "schema": {
+               "type": "string",
+               "enum": ["asc", "desc"],
+               "default": "desc"
+             }
+           }
+         ],
+         "responses": {
+           "200": {
+             "description": "Lista de clientes obtenida exitosamente",
+             "content": {
+               "application/json": {
+                 "schema": {
+                   "allOf": [
+                     {
+                       "$ref": "#/components/schemas/ApiResponse"
+                     },
+                     {
+                       "type": "object",
+                       "properties": {
+                         "data": {
+                           "type": "array",
+                           "items": {
+                             "$ref": "#/components/schemas/User"
+                           }
+                         },
+                         "pagination": {
+                           "type": "object",
+                           "properties": {
+                             "page": {
+                               "type": "number"
+                             },
+                             "limit": {
+                               "type": "number"
+                             },
+                             "total": {
+                               "type": "number"
+                             },
+                             "pages": {
+                               "type": "number"
+                             }
+                           }
+                         }
+                       }
+                     }
+                   ]
+                 }
+               }
+             }
+           },
+           "401": {
+             "description": "No autenticado",
+             "content": {
+               "application/json": {
+                 "schema": {
+                   "$ref": "#/components/schemas/ApiResponse"
+                 }
+               }
+             }
+           },
+           "403": {
+             "description": "No autorizado (solo entrenadores)",
+             "content": {
+               "application/json": {
+                 "schema": {
+                   "$ref": "#/components/schemas/ApiResponse"
+                 }
+               }
+             }
+           }
+         }
+       }
+     },
+     "/api/clients/stats": {
+       "get": {
+         "tags": ["Clients"],
+         "summary": "Obtener estadísticas de clientes",
+         "description": "Obtener estadísticas generales de todos los clientes del entrenador",
+         "security": [
+           {
+             "bearerAuth": []
+           }
+         ],
+         "responses": {
+           "200": {
+             "description": "Estadísticas obtenidas exitosamente",
+             "content": {
+               "application/json": {
+                 "schema": {
+                   "type": "object",
+                   "properties": {
+                     "success": {
+                       "type": "boolean",
+                       "example": true
+                     },
+                     "message": {
+                       "type": "string",
+                       "example": "Estadísticas obtenidas exitosamente"
+                     },
+                     "data": {
+                       "$ref": "#/components/schemas/ClientStats"
+                     }
+                   }
+                 }
+               }
+             }
+           },
+           "401": {
+             "description": "No autenticado",
+             "content": {
+               "application/json": {
+                 "schema": {
+                   "$ref": "#/components/schemas/ApiResponse"
+                 }
+               }
+             }
+           },
+           "403": {
+             "description": "No autorizado (solo entrenadores)",
+             "content": {
+               "application/json": {
+                 "schema": {
+                   "$ref": "#/components/schemas/ApiResponse"
+                 }
+               }
+             }
+           }
+         }
+       }
+     },
+     "/api/clients/{clientId}": {
+       "get": {
+         "tags": ["Clients"],
+         "summary": "Obtener información de un cliente",
+         "description": "Obtener información detallada de un cliente específico",
+         "security": [
+           {
+             "bearerAuth": []
+           }
+         ],
+         "parameters": [
+           {
+             "name": "clientId",
+             "in": "path",
+             "description": "ID del cliente",
+             "required": true,
+             "schema": {
+               "type": "string",
+               "format": "objectId"
+             }
+           }
+         ],
+         "responses": {
+           "200": {
+             "description": "Información del cliente obtenida exitosamente",
+             "content": {
+               "application/json": {
+                 "schema": {
+                   "type": "object",
+                   "properties": {
+                     "success": {
+                       "type": "boolean",
+                       "example": true
+                     },
+                     "message": {
+                       "type": "string",
+                       "example": "Información del cliente obtenida"
+                     },
+                     "data": {
+                       "$ref": "#/components/schemas/User"
+                     }
+                   }
+                 }
+               }
+             }
+           },
+           "400": {
+             "description": "ID de cliente inválido",
+             "content": {
+               "application/json": {
+                 "schema": {
+                   "$ref": "#/components/schemas/ApiResponse"
+                 }
+               }
+             }
+           },
+           "401": {
+             "description": "No autenticado",
+             "content": {
+               "application/json": {
+                 "schema": {
+                   "$ref": "#/components/schemas/ApiResponse"
+                 }
+               }
+             }
+           },
+           "404": {
+             "description": "Cliente no encontrado",
+             "content": {
+               "application/json": {
+                 "schema": {
+                   "$ref": "#/components/schemas/ApiResponse"
+                 }
+               }
+             }
+           }
+         }
+       }
+     },
+     "/api/clients/{clientId}/assign": {
+       "post": {
+         "tags": ["Clients"],
+         "summary": "Asignar cliente",
+         "description": "Asignar un cliente al entrenador autenticado",
+         "security": [
+           {
+             "bearerAuth": []
+           }
+         ],
+         "parameters": [
+           {
+             "name": "clientId",
+             "in": "path",
+             "description": "ID del cliente a asignar",
+             "required": true,
+             "schema": {
+               "type": "string",
+               "format": "objectId"
+             }
+           }
+         ],
+         "responses": {
+           "200": {
+             "description": "Cliente asignado exitosamente",
+             "content": {
+               "application/json": {
+                 "schema": {
+                   "$ref": "#/components/schemas/ApiResponse"
+                 }
+               }
+             }
+           },
+           "400": {
+             "description": "ID de cliente inválido",
+             "content": {
+               "application/json": {
+                 "schema": {
+                   "$ref": "#/components/schemas/ApiResponse"
+                 }
+               }
+             }
+           },
+           "401": {
+             "description": "No autenticado",
+             "content": {
+               "application/json": {
+                 "schema": {
+                   "$ref": "#/components/schemas/ApiResponse"
+                 }
+               }
+             }
+           },
+           "403": {
+             "description": "No autorizado (solo entrenadores)",
+             "content": {
+               "application/json": {
+                 "schema": {
+                   "$ref": "#/components/schemas/ApiResponse"
+                 }
+               }
+             }
+           },
+           "404": {
+             "description": "Cliente no encontrado",
+             "content": {
+               "application/json": {
+                 "schema": {
+                   "$ref": "#/components/schemas/ApiResponse"
+                 }
+               }
+             }
+           },
+           "409": {
+             "description": "Cliente ya asignado",
+             "content": {
+               "application/json": {
+                 "schema": {
+                   "$ref": "#/components/schemas/ApiResponse"
+                 }
+               }
+             }
+           }
+         }
+       },
+       "delete": {
+         "tags": ["Clients"],
+         "summary": "Desasignar cliente",
+         "description": "Desasignar un cliente del entrenador autenticado",
+         "security": [
+           {
+             "bearerAuth": []
+           }
+         ],
+         "parameters": [
+           {
+             "name": "clientId",
+             "in": "path",
+             "description": "ID del cliente a desasignar",
+             "required": true,
+             "schema": {
+               "type": "string",
+               "format": "objectId"
+             }
+           }
+         ],
+         "responses": {
+           "200": {
+             "description": "Cliente desasignado exitosamente",
+             "content": {
+               "application/json": {
+                 "schema": {
+                   "$ref": "#/components/schemas/ApiResponse"
+                 }
+               }
+             }
+           },
+           "400": {
+             "description": "ID de cliente inválido",
+             "content": {
+               "application/json": {
+                 "schema": {
+                   "$ref": "#/components/schemas/ApiResponse"
+                 }
+               }
+             }
+           },
+           "401": {
+             "description": "No autenticado",
+             "content": {
+               "application/json": {
+                 "schema": {
+                   "$ref": "#/components/schemas/ApiResponse"
+                 }
+               }
+             }
+           },
+           "403": {
+             "description": "No autorizado (solo entrenadores)",
+             "content": {
+               "application/json": {
+                 "schema": {
+                   "$ref": "#/components/schemas/ApiResponse"
+                 }
+               }
+             }
+           },
+           "404": {
+             "description": "Cliente no encontrado",
+             "content": {
+               "application/json": {
+                 "schema": {
+                   "$ref": "#/components/schemas/ApiResponse"
+                 }
+               }
+             }
+           }
+         }
+       }
+     },
+     "/api/auth/logout": {
+      "post": {
+        "tags": ["Auth"],
+        "summary": "Cerrar sesión",
+        "description": "Cerrar sesión del usuario autenticado",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Sesión cerrada exitosamente",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "No autenticado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/plans/{userId}/diet": {
+      "get": {
+        "tags": ["Plans"],
+        "summary": "Obtener plan de dieta",
+        "description": "Obtener el plan de dieta activo de un usuario",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "objectId"
+            },
+            "description": "ID del usuario"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Plan de dieta obtenido exitosamente",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Plan de dieta obtenido"
+                    },
+                    "data": {
+                      "$ref": "#/components/schemas/DietPlan"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "ID de usuario inválido",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "No autenticado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "No autorizado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Plan de dieta no encontrado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": ["Plans"],
+        "summary": "Crear o actualizar plan de dieta",
+        "description": "Crear un nuevo plan de dieta o actualizar el existente para un usuario",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "objectId"
+            },
+            "description": "ID del usuario"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["title", "targetCalories", "meals"],
+                "properties": {
+                  "title": {
+                    "type": "string",
+                    "maxLength": 100,
+                    "description": "Título del plan"
+                  },
+                  "description": {
+                    "type": "string",
+                    "maxLength": 1000,
+                    "description": "Descripción del plan"
+                  },
+                  "targetCalories": {
+                    "type": "number",
+                    "minimum": 800,
+                    "maximum": 5000,
+                    "description": "Calorías objetivo diarias"
+                  },
+                  "targetProtein": {
+                    "type": "number",
+                    "minimum": 0,
+                    "description": "Proteína objetivo en gramos"
+                  },
+                  "targetCarbs": {
+                    "type": "number",
+                    "minimum": 0,
+                    "description": "Carbohidratos objetivo en gramos"
+                  },
+                  "targetFat": {
+                    "type": "number",
+                    "minimum": 0,
+                    "description": "Grasas objetivo en gramos"
+                  },
+                  "meals": {
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/components/schemas/Meal"
+                    }
+                  },
+                  "startDate": {
+                    "type": "string",
+                    "format": "date-time",
+                    "description": "Fecha de inicio del plan"
+                  },
+                  "endDate": {
+                    "type": "string",
+                    "format": "date-time",
+                    "description": "Fecha de fin del plan"
+                  },
+                  "notes": {
+                    "type": "string",
+                    "maxLength": 1000,
+                    "description": "Notas adicionales"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Plan de dieta actualizado exitosamente",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Plan de dieta actualizado"
+                    },
+                    "data": {
+                      "$ref": "#/components/schemas/DietPlan"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "201": {
+            "description": "Plan de dieta creado exitosamente",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Plan de dieta creado"
+                    },
+                    "data": {
+                      "$ref": "#/components/schemas/DietPlan"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Datos inválidos",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "No autenticado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "No autorizado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/plans/{userId}/workout": {
+      "get": {
+        "tags": ["Plans"],
+        "summary": "Obtener plan de entrenamiento",
+        "description": "Obtener el plan de entrenamiento activo de un usuario",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "objectId"
+            },
+            "description": "ID del usuario"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Plan de entrenamiento obtenido exitosamente",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Plan de entrenamiento obtenido"
+                    },
+                    "data": {
+                      "$ref": "#/components/schemas/WorkoutPlan"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "ID de usuario inválido",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "No autenticado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "No autorizado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Plan de entrenamiento no encontrado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": ["Plans"],
+        "summary": "Crear o actualizar plan de entrenamiento",
+        "description": "Crear un nuevo plan de entrenamiento o actualizar el existente para un usuario",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "objectId"
+            },
+            "description": "ID del usuario"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["title", "workouts", "schedule"],
+                "properties": {
+                  "title": {
+                    "type": "string",
+                    "maxLength": 100,
+                    "description": "Título del plan"
+                  },
+                  "description": {
+                    "type": "string",
+                    "maxLength": 1000,
+                    "description": "Descripción del plan"
+                  },
+                  "workouts": {
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/components/schemas/Workout"
+                    }
+                  },
+                  "schedule": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "required": ["dayOfWeek", "workoutIndex"],
+                      "properties": {
+                        "dayOfWeek": {
+                          "type": "number",
+                          "minimum": 0,
+                          "maximum": 6,
+                          "description": "Día de la semana (0=Domingo, 6=Sábado)"
+                        },
+                        "workoutIndex": {
+                          "type": "number",
+                          "minimum": 0,
+                          "description": "Índice del entrenamiento en el array"
+                        }
+                      }
+                    }
+                  },
+                  "startDate": {
+                    "type": "string",
+                    "format": "date-time",
+                    "description": "Fecha de inicio del plan"
+                  },
+                  "endDate": {
+                    "type": "string",
+                    "format": "date-time",
+                    "description": "Fecha de fin del plan"
+                  },
+                  "notes": {
+                    "type": "string",
+                    "maxLength": 1000,
+                    "description": "Notas adicionales"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Plan de entrenamiento actualizado exitosamente",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Plan de entrenamiento actualizado"
+                    },
+                    "data": {
+                      "$ref": "#/components/schemas/WorkoutPlan"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "201": {
+            "description": "Plan de entrenamiento creado exitosamente",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Plan de entrenamiento creado"
+                    },
+                    "data": {
+                      "$ref": "#/components/schemas/WorkoutPlan"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Datos inválidos",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "No autenticado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "No autorizado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/plans/{userId}/history": {
+      "get": {
+        "tags": ["Plans"],
+        "summary": "Obtener historial de planes",
+        "description": "Obtener el historial de planes de dieta y entrenamiento de un usuario",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "objectId"
+            },
+            "description": "ID del usuario"
+          },
+          {
+            "name": "type",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": ["diet", "workout"],
+              "description": "Tipo de plan a filtrar"
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "number",
+              "default": 1,
+              "minimum": 1,
+              "description": "Número de página"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "number",
+              "default": 10,
+              "minimum": 1,
+              "maximum": 50,
+              "description": "Número de elementos por página"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Historial de planes obtenido exitosamente",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ApiResponse"
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "data": {
+                          "type": "array",
+                          "items": {
+                            "oneOf": [
+                              {
+                                "$ref": "#/components/schemas/DietPlan"
+                              },
+                              {
+                                "$ref": "#/components/schemas/WorkoutPlan"
+                              }
+                            ]
+                          }
+                        },
+                        "pagination": {
+                          "type": "object",
+                          "properties": {
+                            "page": {
+                              "type": "number"
+                            },
+                            "limit": {
+                              "type": "number"
+                            },
+                            "total": {
+                              "type": "number"
+                            },
+                            "pages": {
+                              "type": "number"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "ID de usuario inválido",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "No autenticado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "No autorizado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/plans/{userId}/deactivate": {
+      "post": {
+        "tags": ["Plans"],
+        "summary": "Desactivar plan",
+        "description": "Desactivar un plan activo de dieta o entrenamiento",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "objectId"
+            },
+            "description": "ID del usuario"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["type"],
+                "properties": {
+                  "type": {
+                    "type": "string",
+                    "enum": ["diet", "workout"],
+                    "description": "Tipo de plan a desactivar"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Plan desactivado exitosamente",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Datos inválidos",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "No autenticado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "No autorizado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Plan no encontrado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/progress/{userId}": {
+      "get": {
+        "tags": ["Progress"],
+        "summary": "Obtener registros de progreso",
+        "description": "Obtener lista paginada de registros de progreso de un usuario",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "objectId"
+            },
+            "description": "ID del usuario"
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "number",
+              "default": 1,
+              "minimum": 1,
+              "description": "Número de página"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "number",
+              "default": 10,
+              "minimum": 1,
+              "maximum": 50,
+              "description": "Número de elementos por página"
+            }
+          },
+          {
+            "name": "startDate",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "date",
+              "description": "Fecha de inicio para filtrar"
+            }
+          },
+          {
+            "name": "endDate",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "date",
+              "description": "Fecha de fin para filtrar"
+            }
+          },
+          {
+            "name": "sortBy",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": ["date", "weight", "bodyFat"],
+              "default": "date",
+              "description": "Campo para ordenar"
+            }
+          },
+          {
+            "name": "sortOrder",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": ["asc", "desc"],
+              "default": "desc",
+              "description": "Orden de clasificación"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Registros de progreso obtenidos exitosamente",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ApiResponse"
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "data": {
+                          "type": "array",
+                          "items": {
+                            "$ref": "#/components/schemas/ProgressLog"
+                          }
+                        },
+                        "pagination": {
+                          "type": "object",
+                          "properties": {
+                            "page": {
+                              "type": "number"
+                            },
+                            "limit": {
+                              "type": "number"
+                            },
+                            "total": {
+                              "type": "number"
+                            },
+                            "pages": {
+                              "type": "number"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "ID de usuario inválido",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "No autenticado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "No autorizado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": ["Progress"],
+        "summary": "Crear registro de progreso",
+        "description": "Crear un nuevo registro de progreso para un usuario",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "objectId"
+            },
+            "description": "ID del usuario"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["date"],
+                "properties": {
+                  "date": {
+                    "type": "string",
+                    "format": "date-time",
+                    "description": "Fecha del registro"
+                  },
+                  "weight": {
+                    "type": "number",
+                    "minimum": 20,
+                    "maximum": 500,
+                    "description": "Peso en kilogramos"
+                  },
+                  "bodyFat": {
+                    "type": "number",
+                    "minimum": 1,
+                    "maximum": 60,
+                    "description": "Porcentaje de grasa corporal"
+                  },
+                  "muscleMass": {
+                    "type": "number",
+                    "minimum": 10,
+                    "maximum": 200,
+                    "description": "Masa muscular en kilogramos"
+                  },
+                  "measurements": {
+                    "type": "object",
+                    "properties": {
+                      "chest": {
+                        "type": "number",
+                        "minimum": 50,
+                        "maximum": 200,
+                        "description": "Medida del pecho en cm"
+                      },
+                      "waist": {
+                        "type": "number",
+                        "minimum": 40,
+                        "maximum": 200,
+                        "description": "Medida de la cintura en cm"
+                      },
+                      "hips": {
+                        "type": "number",
+                        "minimum": 50,
+                        "maximum": 200,
+                        "description": "Medida de las caderas en cm"
+                      },
+                      "arms": {
+                        "type": "number",
+                        "minimum": 15,
+                        "maximum": 80,
+                        "description": "Medida de los brazos en cm"
+                      },
+                      "thighs": {
+                        "type": "number",
+                        "minimum": 30,
+                        "maximum": 100,
+                        "description": "Medida de los muslos en cm"
+                      },
+                      "neck": {
+                        "type": "number",
+                        "minimum": 25,
+                        "maximum": 60,
+                        "description": "Medida del cuello en cm"
+                      }
+                    }
+                  },
+                  "photos": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "format": "uri"
+                    },
+                    "description": "URLs de fotos de progreso"
+                  },
+                  "mood": {
+                    "type": "number",
+                    "minimum": 1,
+                    "maximum": 10,
+                    "description": "Estado de ánimo (1-10)"
+                  },
+                  "energyLevel": {
+                    "type": "number",
+                    "minimum": 1,
+                    "maximum": 10,
+                    "description": "Nivel de energía (1-10)"
+                  },
+                  "sleepHours": {
+                    "type": "number",
+                    "minimum": 0,
+                    "maximum": 24,
+                    "description": "Horas de sueño"
+                  },
+                  "waterIntake": {
+                    "type": "number",
+                    "minimum": 0,
+                    "maximum": 10,
+                    "description": "Consumo de agua en litros"
+                  },
+                  "notes": {
+                    "type": "string",
+                    "maxLength": 1000,
+                    "description": "Notas adicionales"
+                  },
+                  "workoutCompleted": {
+                    "type": "object",
+                    "properties": {
+                      "workoutId": {
+                        "type": "string",
+                        "format": "objectId",
+                        "description": "ID del entrenamiento completado"
+                      },
+                      "duration": {
+                        "type": "number",
+                        "minimum": 1,
+                        "maximum": 600,
+                        "description": "Duración del entrenamiento en minutos"
+                      },
+                      "caloriesBurned": {
+                        "type": "number",
+                        "minimum": 0,
+                        "maximum": 3000,
+                        "description": "Calorías quemadas"
+                      },
+                      "exercises": {
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "required": ["exerciseName", "setsCompleted"],
+                          "properties": {
+                            "exerciseName": {
+                              "type": "string",
+                              "description": "Nombre del ejercicio"
+                            },
+                            "setsCompleted": {
+                              "type": "number",
+                              "minimum": 0,
+                              "maximum": 50,
+                              "description": "Series completadas"
+                            },
+                            "notes": {
+                              "type": "string",
+                              "maxLength": 200,
+                              "description": "Notas del ejercicio"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "nutritionLog": {
+                    "type": "object",
+                    "properties": {
+                      "mealsLogged": {
+                        "type": "number",
+                        "minimum": 0,
+                        "maximum": 10,
+                        "description": "Número de comidas registradas"
+                      },
+                      "totalCalories": {
+                        "type": "number",
+                        "minimum": 0,
+                        "maximum": 10000,
+                        "description": "Calorías totales"
+                      },
+                      "totalProtein": {
+                        "type": "number",
+                        "minimum": 0,
+                        "maximum": 500,
+                        "description": "Proteína total en gramos"
+                      },
+                      "totalCarbs": {
+                        "type": "number",
+                        "minimum": 0,
+                        "maximum": 1000,
+                        "description": "Carbohidratos totales en gramos"
+                      },
+                      "totalFat": {
+                        "type": "number",
+                        "minimum": 0,
+                        "maximum": 300,
+                        "description": "Grasas totales en gramos"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Registro de progreso creado exitosamente",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Registro de progreso creado"
+                    },
+                    "data": {
+                      "$ref": "#/components/schemas/ProgressLog"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Datos inválidos",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "No autenticado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "No autorizado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/progress/{userId}/{logId}": {
+      "put": {
+        "tags": ["Progress"],
+        "summary": "Actualizar registro de progreso",
+        "description": "Actualizar un registro de progreso existente",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "objectId"
+            },
+            "description": "ID del usuario"
+          },
+          {
+            "name": "logId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "objectId"
+            },
+            "description": "ID del registro de progreso"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "date": {
+                    "type": "string",
+                    "format": "date-time",
+                    "description": "Fecha del registro"
+                  },
+                  "weight": {
+                    "type": "number",
+                    "minimum": 20,
+                    "maximum": 500,
+                    "description": "Peso en kilogramos"
+                  },
+                  "bodyFat": {
+                    "type": "number",
+                    "minimum": 1,
+                    "maximum": 60,
+                    "description": "Porcentaje de grasa corporal"
+                  },
+                  "muscleMass": {
+                    "type": "number",
+                    "minimum": 10,
+                    "maximum": 200,
+                    "description": "Masa muscular en kilogramos"
+                  },
+                  "measurements": {
+                    "type": "object",
+                    "properties": {
+                      "chest": {
+                        "type": "number",
+                        "minimum": 50,
+                        "maximum": 200,
+                        "description": "Medida del pecho en cm"
+                      },
+                      "waist": {
+                        "type": "number",
+                        "minimum": 40,
+                        "maximum": 200,
+                        "description": "Medida de la cintura en cm"
+                      },
+                      "hips": {
+                        "type": "number",
+                        "minimum": 50,
+                        "maximum": 200,
+                        "description": "Medida de las caderas en cm"
+                      },
+                      "arms": {
+                        "type": "number",
+                        "minimum": 15,
+                        "maximum": 80,
+                        "description": "Medida de los brazos en cm"
+                      },
+                      "thighs": {
+                        "type": "number",
+                        "minimum": 30,
+                        "maximum": 100,
+                        "description": "Medida de los muslos en cm"
+                      },
+                      "neck": {
+                        "type": "number",
+                        "minimum": 25,
+                        "maximum": 60,
+                        "description": "Medida del cuello en cm"
+                      }
+                    }
+                  },
+                  "photos": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "format": "uri"
+                    },
+                    "description": "URLs de fotos de progreso"
+                  },
+                  "mood": {
+                    "type": "number",
+                    "minimum": 1,
+                    "maximum": 10,
+                    "description": "Estado de ánimo (1-10)"
+                  },
+                  "energyLevel": {
+                    "type": "number",
+                    "minimum": 1,
+                    "maximum": 10,
+                    "description": "Nivel de energía (1-10)"
+                  },
+                  "sleepHours": {
+                    "type": "number",
+                    "minimum": 0,
+                    "maximum": 24,
+                    "description": "Horas de sueño"
+                  },
+                  "waterIntake": {
+                    "type": "number",
+                    "minimum": 0,
+                    "maximum": 10,
+                    "description": "Consumo de agua en litros"
+                  },
+                  "notes": {
+                    "type": "string",
+                    "maxLength": 1000,
+                    "description": "Notas adicionales"
+                  },
+                  "workoutCompleted": {
+                    "type": "object",
+                    "properties": {
+                      "workoutId": {
+                        "type": "string",
+                        "format": "objectId",
+                        "description": "ID del entrenamiento completado"
+                      },
+                      "duration": {
+                        "type": "number",
+                        "minimum": 1,
+                        "maximum": 600,
+                        "description": "Duración del entrenamiento en minutos"
+                      },
+                      "caloriesBurned": {
+                        "type": "number",
+                        "minimum": 0,
+                        "maximum": 3000,
+                        "description": "Calorías quemadas"
+                      },
+                      "exercises": {
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "required": ["exerciseName", "setsCompleted"],
+                          "properties": {
+                            "exerciseName": {
+                              "type": "string",
+                              "description": "Nombre del ejercicio"
+                            },
+                            "setsCompleted": {
+                              "type": "number",
+                              "minimum": 0,
+                              "maximum": 50,
+                              "description": "Series completadas"
+                            },
+                            "notes": {
+                              "type": "string",
+                              "maxLength": 200,
+                              "description": "Notas del ejercicio"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "nutritionLog": {
+                    "type": "object",
+                    "properties": {
+                      "mealsLogged": {
+                        "type": "number",
+                        "minimum": 0,
+                        "maximum": 10,
+                        "description": "Número de comidas registradas"
+                      },
+                      "totalCalories": {
+                        "type": "number",
+                        "minimum": 0,
+                        "maximum": 10000,
+                        "description": "Calorías totales"
+                      },
+                      "totalProtein": {
+                        "type": "number",
+                        "minimum": 0,
+                        "maximum": 500,
+                        "description": "Proteína total en gramos"
+                      },
+                      "totalCarbs": {
+                        "type": "number",
+                        "minimum": 0,
+                        "maximum": 1000,
+                        "description": "Carbohidratos totales en gramos"
+                      },
+                      "totalFat": {
+                        "type": "number",
+                        "minimum": 0,
+                        "maximum": 300,
+                        "description": "Grasas totales en gramos"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Registro de progreso actualizado exitosamente",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Registro de progreso actualizado"
+                    },
+                    "data": {
+                      "$ref": "#/components/schemas/ProgressLog"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Datos inválidos",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "No autenticado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "No autorizado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Registro no encontrado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": ["Progress"],
+        "summary": "Eliminar registro de progreso",
+        "description": "Eliminar un registro de progreso",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "objectId"
+            },
+            "description": "ID del usuario"
+          },
+          {
+            "name": "logId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "objectId"
+            },
+            "description": "ID del registro de progreso"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Registro de progreso eliminado exitosamente",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "ID inválido",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "No autenticado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "No autorizado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Registro no encontrado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/progress/{userId}/summary": {
+      "get": {
+        "tags": ["Progress"],
+        "summary": "Obtener resumen de progreso",
+        "description": "Obtener un resumen del progreso de un usuario",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "objectId"
+            },
+            "description": "ID del usuario"
+          },
+          {
+            "name": "days",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "number",
+              "default": 30,
+              "minimum": 1,
+              "maximum": 365,
+              "description": "Número de días para el resumen"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Resumen de progreso obtenido exitosamente",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Resumen de progreso obtenido"
+                    },
+                    "data": {
+                      "$ref": "#/components/schemas/ProgressSummary"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "ID de usuario inválido",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "No autenticado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "No autorizado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/progress/{userId}/stats": {
+      "get": {
+        "tags": ["Progress"],
+        "summary": "Obtener estadísticas de progreso",
+        "description": "Obtener estadísticas detalladas del progreso de un usuario",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "objectId"
+            },
+            "description": "ID del usuario"
+          },
+          {
+            "name": "period",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": ["week", "month", "year"],
+              "default": "month",
+              "description": "Período para las estadísticas"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Estadísticas de progreso obtenidas exitosamente",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Estadísticas de progreso obtenidas"
+                    },
+                    "data": {
+                      "$ref": "#/components/schemas/ProgressStats"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "ID de usuario inválido",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "No autenticado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "No autorizado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/chat/conversations": {
+      "get": {
+        "tags": ["Chat"],
+        "summary": "Obtener conversaciones",
+        "description": "Obtener lista de conversaciones recientes del usuario autenticado",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "number",
+              "default": 20,
+              "minimum": 1,
+              "maximum": 100,
+              "description": "Número de conversaciones a obtener"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Conversaciones obtenidas exitosamente",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Conversaciones obtenidas"
+                    },
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/Conversation"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "No autenticado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/chat/unread": {
+      "get": {
+        "tags": ["Chat"],
+        "summary": "Obtener conteo de mensajes no leídos",
+        "description": "Obtener el número total de mensajes no leídos del usuario autenticado",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Conteo obtenido exitosamente",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Conteo obtenido"
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "count": {
+                          "type": "number",
+                          "description": "Número de mensajes no leídos"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "No autenticado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/chat/{partnerId}": {
+      "get": {
+        "tags": ["Chat"],
+        "summary": "Obtener historial de mensajes",
+        "description": "Obtener historial de mensajes con un usuario específico",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "partnerId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "objectId"
+            },
+            "description": "ID del usuario con quien se conversa"
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "number",
+              "default": 1,
+              "minimum": 1,
+              "description": "Número de página"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "number",
+              "default": 50,
+              "minimum": 1,
+              "maximum": 100,
+              "description": "Número de mensajes por página"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Historial de mensajes obtenido exitosamente",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ApiResponse"
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "data": {
+                          "type": "array",
+                          "items": {
+                            "$ref": "#/components/schemas/ChatMessage"
+                          }
+                        },
+                        "pagination": {
+                          "type": "object",
+                          "properties": {
+                            "page": {
+                              "type": "number"
+                            },
+                            "limit": {
+                              "type": "number"
+                            },
+                            "total": {
+                              "type": "number"
+                            },
+                            "pages": {
+                              "type": "number"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "ID de usuario inválido",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "No autenticado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "No autorizado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": ["Chat"],
+        "summary": "Enviar mensaje",
+        "description": "Enviar un mensaje a un usuario específico",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "partnerId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "objectId"
+            },
+            "description": "ID del usuario destinatario"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["message", "messageType"],
+                "properties": {
+                  "message": {
+                    "type": "string",
+                    "maxLength": 2000,
+                    "description": "Contenido del mensaje"
+                  },
+                  "messageType": {
+                    "type": "string",
+                    "enum": ["text", "image", "file"],
+                    "description": "Tipo de mensaje"
+                  },
+                  "attachments": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "format": "uri"
+                    },
+                    "description": "URLs de archivos adjuntos"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Mensaje enviado exitosamente",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Mensaje enviado"
+                    },
+                    "data": {
+                      "$ref": "#/components/schemas/ChatMessage"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Datos inválidos",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "No autenticado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "No autorizado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/chat/{partnerId}/read": {
+      "put": {
+        "tags": ["Chat"],
+        "summary": "Marcar mensajes como leídos",
+        "description": "Marcar todos los mensajes de un usuario como leídos",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "partnerId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "objectId"
+            },
+            "description": "ID del usuario cuyos mensajes se marcarán como leídos"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Mensajes marcados como leídos exitosamente",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "ID de usuario inválido",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "No autenticado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "No autorizado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/chat/{partnerId}/search": {
+      "get": {
+        "tags": ["Chat"],
+        "summary": "Buscar mensajes",
+        "description": "Buscar mensajes en una conversación específica",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "partnerId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "objectId"
+            },
+            "description": "ID del usuario con quien se busca"
+          },
+          {
+            "name": "query",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 100,
+              "description": "Término de búsqueda"
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "number",
+              "default": 1,
+              "minimum": 1,
+              "description": "Número de página"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "number",
+              "default": 20,
+              "minimum": 1,
+              "maximum": 100,
+              "description": "Número de resultados por página"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Búsqueda realizada exitosamente",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ApiResponse"
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "data": {
+                          "type": "array",
+                          "items": {
+                            "$ref": "#/components/schemas/ChatMessage"
+                          }
+                        },
+                        "pagination": {
+                          "type": "object",
+                          "properties": {
+                            "page": {
+                              "type": "number"
+                            },
+                            "limit": {
+                              "type": "number"
+                            },
+                            "total": {
+                              "type": "number"
+                            },
+                            "pages": {
+                              "type": "number"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Parámetros inválidos",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "No autenticado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "No autorizado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/chat/message/{messageId}": {
+      "delete": {
+        "tags": ["Chat"],
+        "summary": "Eliminar mensaje",
+        "description": "Eliminar un mensaje específico",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "messageId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "objectId"
+            },
+            "description": "ID del mensaje a eliminar"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Mensaje eliminado exitosamente",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "ID de mensaje inválido",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "No autenticado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "No autorizado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Mensaje no encontrado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/upload/info": {
+      "get": {
+        "tags": ["Upload"],
+        "summary": "Obtener información de configuración",
+        "description": "Obtener información sobre la configuración de subida de archivos",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Información obtenida exitosamente",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Información obtenida"
+                    },
+                    "data": {
+                      "$ref": "#/components/schemas/UploadConfig"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "No autenticado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/upload/profile": {
+      "post": {
+        "tags": ["Upload"],
+        "summary": "Subir imagen de perfil",
+        "description": "Subir una imagen de perfil para el usuario autenticado",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "required": ["profileImage"],
+                "properties": {
+                  "profileImage": {
+                    "type": "string",
+                    "format": "binary",
+                    "description": "Imagen de perfil (JPG, PNG, máximo 5MB)"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Imagen subida exitosamente",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Imagen subida exitosamente"
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "url": {
+                          "type": "string",
+                          "format": "uri",
+                          "description": "URL de la imagen subida"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Archivo inválido",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "No autenticado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse"
+                }
+              }
+            }
+          },
+          "413": {
+            "description": "Archivo demasiado grande",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/upload/progress": {
+      "post": {
+        "tags": ["Upload"],
+        "summary": "Subir imágenes de progreso",
+        "description": "Subir múltiples imágenes de progreso para el usuario autenticado",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "required": ["progressImages"],
+                "properties": {
+                  "progressImages": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "format": "binary"
+                    },
+                    "description": "Imágenes de progreso (JPG, PNG, máximo 5 archivos, 5MB cada uno)"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Imágenes subidas exitosamente",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Imágenes subidas exitosamente"
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "urls": {
+                          "type": "array",
+                          "items": {
+                            "type": "string",
+                            "format": "uri"
+                          },
+                          "description": "URLs de las imágenes subidas"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Archivos inválidos",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "No autenticado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse"
+                }
+              }
+            }
+          },
+          "413": {
+            "description": "Archivos demasiado grandes",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/upload/chat": {
+      "post": {
+        "tags": ["Upload"],
+        "summary": "Subir archivos para chat",
+        "description": "Subir archivos para usar en el sistema de chat",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "required": ["chatFiles"],
+                "properties": {
+                  "chatFiles": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "format": "binary"
+                    },
+                    "description": "Archivos para chat (imágenes, documentos, máximo 3 archivos, 10MB cada uno)"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Archivos subidos exitosamente",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Archivos subidos exitosamente"
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "urls": {
+                          "type": "array",
+                          "items": {
+                            "type": "string",
+                            "format": "uri"
+                          },
+                          "description": "URLs de los archivos subidos"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Archivos inválidos",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "No autenticado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse"
+                }
+              }
+            }
+          },
+          "413": {
+            "description": "Archivos demasiado grandes",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/upload/image": {
+      "delete": {
+        "tags": ["Upload"],
+        "summary": "Eliminar imagen",
+        "description": "Eliminar una imagen del servidor",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["imageUrl"],
+                "properties": {
+                  "imageUrl": {
+                    "type": "string",
+                    "format": "uri",
+                    "description": "URL de la imagen a eliminar"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Imagen eliminada exitosamente",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "URL inválida",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "No autenticado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "No autorizado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Imagen no encontrada",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/upload/cleanup": {
+      "post": {
+        "tags": ["Upload"],
+        "summary": "Limpiar archivos huérfanos",
+        "description": "Limpiar archivos huérfanos del servidor (solo entrenadores)",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Limpieza completada exitosamente",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Limpieza completada"
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "filesRemoved": {
+                          "type": "number",
+                          "description": "Número de archivos eliminados"
+                        },
+                        "spaceFreed": {
+                          "type": "number",
+                          "description": "Espacio liberado en bytes"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "No autenticado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "No autorizado (solo entrenadores)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT",
+        "description": "Token JWT obtenido al autenticarse"
+      }
+    },
+    "schemas": {
+      "User": {
+        "type": "object",
+        "properties": {
+          "_id": {
+            "type": "string",
+            "format": "objectId",
+            "description": "ID único del usuario"
+          },
+          "email": {
+            "type": "string",
+            "format": "email",
+            "description": "Email del usuario"
+          },
+          "firstName": {
+            "type": "string",
+            "description": "Nombre del usuario"
+          },
+          "lastName": {
+            "type": "string",
+            "description": "Apellido del usuario"
+          },
+          "role": {
+            "type": "string",
+            "enum": ["USER", "TRAINER"],
+            "description": "Rol del usuario"
+          },
+          "profilePicture": {
+            "type": "string",
+            "format": "uri",
+            "description": "URL de la imagen de perfil"
+          },
+          "dateOfBirth": {
+            "type": "string",
+            "format": "date",
+            "description": "Fecha de nacimiento"
+          },
+          "gender": {
+            "type": "string",
+            "enum": ["male", "female", "other"],
+            "description": "Género del usuario"
+          },
+          "height": {
+            "type": "number",
+            "description": "Altura en centímetros"
+          },
+          "weight": {
+            "type": "number",
+            "description": "Peso en kilogramos"
+          },
+          "activityLevel": {
+            "type": "string",
+            "enum": ["SEDENTARY", "LIGHTLY_ACTIVE", "MODERATELY_ACTIVE", "VERY_ACTIVE", "EXTREMELY_ACTIVE"],
+            "description": "Nivel de actividad física"
+          },
+          "goals": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": ["LOSE_WEIGHT", "GAIN_WEIGHT", "MAINTAIN_WEIGHT", "BUILD_MUSCLE", "IMPROVE_FITNESS"]
+            },
+            "description": "Objetivos del usuario"
+          },
+          "medicalConditions": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Condiciones médicas"
+          },
+          "allergies": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Alergias del usuario"
+          },
+          "trainerId": {
+            "type": "string",
+            "format": "objectId",
+            "description": "ID del entrenador asignado"
+          },
+          "clients": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "objectId"
+            },
+            "description": "IDs de los clientes (solo para entrenadores)"
+          },
+          "isActive": {
+            "type": "boolean",
+            "description": "Estado activo del usuario"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "clientCount": {
+            "type": "number",
+            "description": "Número de clientes (solo para entrenadores)"
+          }
+        }
+      },
+      "LoginRequest": {
+        "type": "object",
+        "required": ["email", "password"],
+        "properties": {
+          "email": {
+            "type": "string",
+            "format": "email",
+            "description": "Email del usuario"
+          },
+          "password": {
+            "type": "string",
+            "minLength": 6,
+            "description": "Contraseña del usuario"
+          }
+        },
+        "examples": {
+          "trainer": {
+            "summary": "Login de entrenador",
+            "value": {
+              "email": "trainer@example.com",
+              "password": "password123"
+            }
+          },
+          "client": {
+            "summary": "Login de cliente",
+            "value": {
+              "email": "client@example.com",
+              "password": "password123"
+            }
+          }
+        }
+      },
+      "LoginResponse": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "example": true
+          },
+          "message": {
+            "type": "string",
+            "example": "Login exitoso"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "token": {
+                "type": "string",
+                "description": "Token JWT para autenticación"
+              },
+              "user": {
+                "$ref": "#/components/schemas/User"
+              }
+            }
+          }
+        }
+      },
+      "RegisterRequest": {
+        "type": "object",
+        "required": ["email", "password", "firstName", "lastName", "role"],
+        "properties": {
+          "email": {
+            "type": "string",
+            "format": "email",
+            "description": "Email del usuario"
+          },
+          "password": {
+            "type": "string",
+            "minLength": 6,
+            "description": "Contraseña del usuario"
+          },
+          "firstName": {
+            "type": "string",
+            "maxLength": 50,
+            "description": "Nombre del usuario"
+          },
+          "lastName": {
+            "type": "string",
+            "maxLength": 50,
+            "description": "Apellido del usuario"
+          },
+          "role": {
+            "type": "string",
+            "enum": ["USER", "TRAINER"],
+            "description": "Rol del usuario"
+          },
+          "dateOfBirth": {
+            "type": "string",
+            "format": "date",
+            "description": "Fecha de nacimiento"
+          },
+          "gender": {
+            "type": "string",
+            "enum": ["male", "female", "other"],
+            "description": "Género del usuario"
+          },
+          "height": {
+            "type": "number",
+            "minimum": 50,
+            "maximum": 300,
+            "description": "Altura en centímetros"
+          },
+          "weight": {
+            "type": "number",
+            "minimum": 20,
+            "maximum": 500,
+            "description": "Peso en kilogramos"
+          },
+          "activityLevel": {
+            "type": "string",
+            "enum": ["SEDENTARY", "LIGHTLY_ACTIVE", "MODERATELY_ACTIVE", "VERY_ACTIVE", "EXTREMELY_ACTIVE"],
+            "description": "Nivel de actividad física"
+          },
+          "goals": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": ["LOSE_WEIGHT", "GAIN_WEIGHT", "MAINTAIN_WEIGHT", "BUILD_MUSCLE", "IMPROVE_FITNESS"]
+            },
+            "description": "Objetivos del usuario"
+          },
+          "medicalConditions": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Condiciones médicas"
+          },
+          "allergies": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Alergias del usuario"
+          },
+          "trainerId": {
+            "type": "string",
+            "format": "objectId",
+            "description": "ID del entrenador asignado"
+          }
+        }
+      },
+      "UpdateUserRequest": {
+        "type": "object",
+        "properties": {
+          "firstName": {
+            "type": "string",
+            "maxLength": 50,
+            "description": "Nombre del usuario"
+          },
+          "lastName": {
+            "type": "string",
+            "maxLength": 50,
+            "description": "Apellido del usuario"
+          },
+          "dateOfBirth": {
+            "type": "string",
+            "format": "date",
+            "description": "Fecha de nacimiento"
+          },
+          "gender": {
+            "type": "string",
+            "enum": ["male", "female", "other"],
+            "description": "Género del usuario"
+          },
+          "height": {
+            "type": "number",
+            "minimum": 50,
+            "maximum": 300,
+            "description": "Altura en centímetros"
+          },
+          "weight": {
+            "type": "number",
+            "minimum": 20,
+            "maximum": 500,
+            "description": "Peso en kilogramos"
+          },
+          "activityLevel": {
+            "type": "string",
+            "enum": ["SEDENTARY", "LIGHTLY_ACTIVE", "MODERATELY_ACTIVE", "VERY_ACTIVE", "EXTREMELY_ACTIVE"],
+            "description": "Nivel de actividad física"
+          },
+          "goals": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": ["LOSE_WEIGHT", "GAIN_WEIGHT", "MAINTAIN_WEIGHT", "BUILD_MUSCLE", "IMPROVE_FITNESS"]
+            },
+            "description": "Objetivos del usuario"
+          },
+          "medicalConditions": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Condiciones médicas"
+          },
+          "allergies": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Alergias del usuario"
+          }
+        }
+      },
+      "ChangePasswordRequest": {
+        "type": "object",
+        "required": ["currentPassword", "newPassword"],
+        "properties": {
+          "currentPassword": {
+            "type": "string",
+            "description": "Contraseña actual"
+          },
+          "newPassword": {
+            "type": "string",
+            "minLength": 6,
+            "pattern": "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)",
+            "description": "Nueva contraseña (debe contener al menos una minúscula, una mayúscula y un número)"
+          }
+        }
+      },
+      "ApiResponse": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean"
+          },
+          "message": {
+            "type": "string"
+          },
+          "data": {
+            "type": "object"
+          },
+          "error": {
+            "type": "string"
+          }
+        }
+      },
+             "PaginatedResponse": {
+         "allOf": [
+           {
+             "$ref": "#/components/schemas/ApiResponse"
+           },
+           {
+             "type": "object",
+             "properties": {
+               "data": {
+                 "type": "array"
+               },
+               "pagination": {
+                 "type": "object",
+                 "properties": {
+                   "page": {
+                     "type": "number"
+                   },
+                   "limit": {
+                     "type": "number"
+                   },
+                   "total": {
+                     "type": "number"
+                   },
+                   "pages": {
+                     "type": "number"
+                   }
+                 }
+               }
+             }
+           }
+         ]
+       },
+       "ClientStats": {
+         "type": "object",
+         "properties": {
+           "totalClients": {
+             "type": "number",
+             "description": "Número total de clientes"
+           },
+           "activeClients": {
+             "type": "number",
+             "description": "Número de clientes activos"
+           },
+           "newClientsThisMonth": {
+             "type": "number",
+             "description": "Nuevos clientes este mes"
+           },
+           "clientsWithActivePlans": {
+             "type": "number",
+             "description": "Clientes con planes activos"
+           },
+           "averageProgressScore": {
+             "type": "number",
+             "description": "Puntuación promedio de progreso"
+           }
+         }
+       },
+       "Food": {
+         "type": "object",
+         "required": ["name", "calories", "protein", "carbs", "fat"],
+         "properties": {
+           "name": {
+             "type": "string",
+             "description": "Nombre del alimento"
+           },
+           "calories": {
+             "type": "number",
+             "minimum": 0,
+             "description": "Calorías por 100g"
+           },
+           "protein": {
+             "type": "number",
+             "minimum": 0,
+             "description": "Proteína en gramos por 100g"
+           },
+           "carbs": {
+             "type": "number",
+             "minimum": 0,
+             "description": "Carbohidratos en gramos por 100g"
+           },
+           "fat": {
+             "type": "number",
+             "minimum": 0,
+             "description": "Grasas en gramos por 100g"
+           },
+           "fiber": {
+             "type": "number",
+             "minimum": 0,
+             "description": "Fibra en gramos por 100g"
+           }
+         }
+       },
+       "Meal": {
+         "type": "object",
+         "required": ["type", "foods", "totalCalories"],
+         "properties": {
+           "type": {
+             "type": "string",
+             "enum": ["BREAKFAST", "LUNCH", "DINNER", "SNACK"],
+             "description": "Tipo de comida"
+           },
+           "foods": {
+             "type": "array",
+             "items": {
+               "type": "object",
+               "required": ["food", "quantity"],
+               "properties": {
+                 "food": {
+                   "$ref": "#/components/schemas/Food"
+                 },
+                 "quantity": {
+                   "type": "number",
+                   "minimum": 1,
+                   "description": "Cantidad en gramos"
+                 }
+               }
+             }
+           },
+           "totalCalories": {
+             "type": "number",
+             "minimum": 0,
+             "description": "Calorías totales de la comida"
+           },
+           "notes": {
+             "type": "string",
+             "maxLength": 500,
+             "description": "Notas adicionales"
+           }
+         }
+       },
+       "DietPlan": {
+         "type": "object",
+         "properties": {
+           "_id": {
+             "type": "string",
+             "format": "objectId",
+             "description": "ID único del plan"
+           },
+           "userId": {
+             "type": "string",
+             "format": "objectId",
+             "description": "ID del usuario"
+           },
+           "trainerId": {
+             "type": "string",
+             "format": "objectId",
+             "description": "ID del entrenador"
+           },
+           "title": {
+             "type": "string",
+             "maxLength": 100,
+             "description": "Título del plan"
+           },
+           "description": {
+             "type": "string",
+             "maxLength": 1000,
+             "description": "Descripción del plan"
+           },
+           "targetCalories": {
+             "type": "number",
+             "minimum": 800,
+             "maximum": 5000,
+             "description": "Calorías objetivo diarias"
+           },
+           "targetProtein": {
+             "type": "number",
+             "minimum": 0,
+             "description": "Proteína objetivo en gramos"
+           },
+           "targetCarbs": {
+             "type": "number",
+             "minimum": 0,
+             "description": "Carbohidratos objetivo en gramos"
+           },
+           "targetFat": {
+             "type": "number",
+             "minimum": 0,
+             "description": "Grasas objetivo en gramos"
+           },
+           "meals": {
+             "type": "array",
+             "items": {
+               "$ref": "#/components/schemas/Meal"
+             }
+           },
+           "startDate": {
+             "type": "string",
+             "format": "date-time",
+             "description": "Fecha de inicio del plan"
+           },
+           "endDate": {
+             "type": "string",
+             "format": "date-time",
+             "description": "Fecha de fin del plan"
+           },
+           "isActive": {
+             "type": "boolean",
+             "description": "Estado activo del plan"
+           },
+           "notes": {
+             "type": "string",
+             "maxLength": 1000,
+             "description": "Notas adicionales"
+           },
+           "createdAt": {
+             "type": "string",
+             "format": "date-time"
+           },
+           "updatedAt": {
+             "type": "string",
+             "format": "date-time"
+           },
+           "actualMacros": {
+             "type": "object",
+             "properties": {
+               "calories": {
+                 "type": "number"
+               },
+               "protein": {
+                 "type": "number"
+               },
+               "carbs": {
+                 "type": "number"
+               },
+               "fat": {
+                 "type": "number"
+               },
+               "fiber": {
+                 "type": "number"
+               }
+             }
+           },
+           "macroDistribution": {
+             "type": "object",
+             "properties": {
+               "protein": {
+                 "type": "number"
+               },
+               "carbs": {
+                 "type": "number"
+               },
+               "fat": {
+                 "type": "number"
+               }
+             }
+           },
+           "durationDays": {
+             "type": "number",
+             "nullable": true
+           }
+         }
+       },
+       "Exercise": {
+         "type": "object",
+         "required": ["name", "type", "targetMuscles", "difficulty"],
+         "properties": {
+           "name": {
+             "type": "string",
+             "description": "Nombre del ejercicio"
+           },
+           "type": {
+             "type": "string",
+             "enum": ["CARDIO", "STRENGTH", "FLEXIBILITY", "BALANCE", "SPORTS"],
+             "description": "Tipo de ejercicio"
+           },
+           "description": {
+             "type": "string",
+             "maxLength": 500,
+             "description": "Descripción del ejercicio"
+           },
+           "instructions": {
+             "type": "array",
+             "items": {
+               "type": "string"
+             },
+             "description": "Instrucciones del ejercicio"
+           },
+           "targetMuscles": {
+             "type": "array",
+             "items": {
+               "type": "string"
+             },
+             "description": "Músculos objetivo"
+           },
+           "equipment": {
+             "type": "array",
+             "items": {
+               "type": "string"
+             },
+             "description": "Equipamiento necesario"
+           },
+           "difficulty": {
+             "type": "string",
+             "enum": ["beginner", "intermediate", "advanced"],
+             "description": "Nivel de dificultad"
+           }
+         }
+       },
+       "WorkoutSet": {
+         "type": "object",
+         "properties": {
+           "reps": {
+             "type": "number",
+             "minimum": 1,
+             "description": "Número de repeticiones"
+           },
+           "weight": {
+             "type": "number",
+             "minimum": 0,
+             "description": "Peso en kilogramos"
+           },
+           "duration": {
+             "type": "number",
+             "minimum": 1,
+             "description": "Duración en segundos"
+           },
+           "distance": {
+             "type": "number",
+             "minimum": 1,
+             "description": "Distancia en metros"
+           },
+           "restTime": {
+             "type": "number",
+             "minimum": 0,
+             "default": 60,
+             "description": "Tiempo de descanso en segundos"
+           }
+         }
+       },
+       "WorkoutExercise": {
+         "type": "object",
+         "required": ["exercise", "sets"],
+         "properties": {
+           "exercise": {
+             "$ref": "#/components/schemas/Exercise"
+           },
+           "sets": {
+             "type": "array",
+             "items": {
+               "$ref": "#/components/schemas/WorkoutSet"
+             }
+           },
+           "notes": {
+             "type": "string",
+             "maxLength": 300,
+             "description": "Notas del ejercicio"
+           }
+         }
+       },
+       "Workout": {
+         "type": "object",
+         "required": ["name", "exercises", "estimatedDuration", "difficulty"],
+         "properties": {
+           "name": {
+             "type": "string",
+             "maxLength": 100,
+             "description": "Nombre del entrenamiento"
+           },
+           "exercises": {
+             "type": "array",
+             "items": {
+               "$ref": "#/components/schemas/WorkoutExercise"
+             }
+           },
+           "estimatedDuration": {
+             "type": "number",
+             "minimum": 5,
+             "maximum": 300,
+             "description": "Duración estimada en minutos"
+           },
+           "difficulty": {
+             "type": "string",
+             "enum": ["beginner", "intermediate", "advanced"],
+             "description": "Nivel de dificultad"
+           },
+           "notes": {
+             "type": "string",
+             "maxLength": 500,
+             "description": "Notas del entrenamiento"
+           }
+         }
+       },
+       "WorkoutPlan": {
+         "type": "object",
+         "properties": {
+           "_id": {
+             "type": "string",
+             "format": "objectId",
+             "description": "ID único del plan"
+           },
+           "userId": {
+             "type": "string",
+             "format": "objectId",
+             "description": "ID del usuario"
+           },
+           "trainerId": {
+             "type": "string",
+             "format": "objectId",
+             "description": "ID del entrenador"
+           },
+           "title": {
+             "type": "string",
+             "maxLength": 100,
+             "description": "Título del plan"
+           },
+           "description": {
+             "type": "string",
+             "maxLength": 1000,
+             "description": "Descripción del plan"
+           },
+           "workouts": {
+             "type": "array",
+             "items": {
+               "$ref": "#/components/schemas/Workout"
+             }
+           },
+           "schedule": {
+             "type": "array",
+             "items": {
+               "type": "object",
+               "required": ["dayOfWeek", "workoutIndex"],
+               "properties": {
+                 "dayOfWeek": {
+                   "type": "number",
+                   "minimum": 0,
+                   "maximum": 6,
+                   "description": "Día de la semana (0=Domingo, 6=Sábado)"
+                 },
+                 "workoutIndex": {
+                   "type": "number",
+                   "minimum": 0,
+                   "description": "Índice del entrenamiento en el array"
+                 }
+               }
+             }
+           },
+           "startDate": {
+             "type": "string",
+             "format": "date-time",
+             "description": "Fecha de inicio del plan"
+           },
+           "endDate": {
+             "type": "string",
+             "format": "date-time",
+             "description": "Fecha de fin del plan"
+           },
+           "isActive": {
+             "type": "boolean",
+             "description": "Estado activo del plan"
+           },
+           "notes": {
+             "type": "string",
+             "maxLength": 1000,
+             "description": "Notas adicionales"
+           },
+           "createdAt": {
+             "type": "string",
+             "format": "date-time"
+           },
+           "updatedAt": {
+             "type": "string",
+             "format": "date-time"
+           },
+           "weeklyWorkouts": {
+             "type": "number",
+             "description": "Número de entrenamientos por semana"
+           },
+           "durationDays": {
+             "type": "number",
+             "nullable": true,
+             "description": "Duración del plan en días"
+           },
+           "totalExercises": {
+             "type": "number",
+             "description": "Número total de ejercicios"
+           },
+           "averageWorkoutDuration": {
+             "type": "number",
+             "description": "Duración promedio de entrenamientos"
+           },
+           "targetedMuscleGroups": {
+             "type": "array",
+             "items": {
+               "type": "string"
+             },
+             "description": "Grupos musculares objetivo"
+           }
+         }
+       },
+       "ProgressLog": {
+         "type": "object",
+         "properties": {
+           "_id": {
+             "type": "string",
+             "format": "objectId",
+             "description": "ID único del registro"
+           },
+           "userId": {
+             "type": "string",
+             "format": "objectId",
+             "description": "ID del usuario"
+           },
+           "date": {
+             "type": "string",
+             "format": "date-time",
+             "description": "Fecha del registro"
+           },
+           "weight": {
+             "type": "number",
+             "minimum": 20,
+             "maximum": 500,
+             "description": "Peso en kilogramos"
+           },
+           "bodyFat": {
+             "type": "number",
+             "minimum": 1,
+             "maximum": 60,
+             "description": "Porcentaje de grasa corporal"
+           },
+           "muscleMass": {
+             "type": "number",
+             "minimum": 10,
+             "maximum": 200,
+             "description": "Masa muscular en kilogramos"
+           },
+           "measurements": {
+             "type": "object",
+             "properties": {
+               "chest": {
+                 "type": "number",
+                 "minimum": 50,
+                 "maximum": 200,
+                 "description": "Medida del pecho en cm"
+               },
+               "waist": {
+                 "type": "number",
+                 "minimum": 40,
+                 "maximum": 200,
+                 "description": "Medida de la cintura en cm"
+               },
+               "hips": {
+                 "type": "number",
+                 "minimum": 50,
+                 "maximum": 200,
+                 "description": "Medida de las caderas en cm"
+               },
+               "arms": {
+                 "type": "number",
+                 "minimum": 15,
+                 "maximum": 80,
+                 "description": "Medida de los brazos en cm"
+               },
+               "thighs": {
+                 "type": "number",
+                 "minimum": 30,
+                 "maximum": 100,
+                 "description": "Medida de los muslos en cm"
+               },
+               "neck": {
+                 "type": "number",
+                 "minimum": 25,
+                 "maximum": 60,
+                 "description": "Medida del cuello en cm"
+               }
+             }
+           },
+           "photos": {
+             "type": "array",
+             "items": {
+               "type": "string",
+               "format": "uri"
+             },
+             "description": "URLs de fotos de progreso"
+           },
+           "mood": {
+             "type": "number",
+             "minimum": 1,
+             "maximum": 10,
+             "description": "Estado de ánimo (1-10)"
+           },
+           "energyLevel": {
+             "type": "number",
+             "minimum": 1,
+             "maximum": 10,
+             "description": "Nivel de energía (1-10)"
+           },
+           "sleepHours": {
+             "type": "number",
+             "minimum": 0,
+             "maximum": 24,
+             "description": "Horas de sueño"
+           },
+           "waterIntake": {
+             "type": "number",
+             "minimum": 0,
+             "maximum": 10,
+             "description": "Consumo de agua en litros"
+           },
+           "notes": {
+             "type": "string",
+             "maxLength": 1000,
+             "description": "Notas adicionales"
+           },
+           "workoutCompleted": {
+             "type": "object",
+             "properties": {
+               "workoutId": {
+                 "type": "string",
+                 "format": "objectId",
+                 "description": "ID del entrenamiento completado"
+               },
+               "duration": {
+                 "type": "number",
+                 "minimum": 1,
+                 "maximum": 600,
+                 "description": "Duración del entrenamiento en minutos"
+               },
+               "caloriesBurned": {
+                 "type": "number",
+                 "minimum": 0,
+                 "maximum": 3000,
+                 "description": "Calorías quemadas"
+               },
+               "exercises": {
+                 "type": "array",
+                 "items": {
+                   "type": "object",
+                   "required": ["exerciseName", "setsCompleted"],
+                   "properties": {
+                     "exerciseName": {
+                       "type": "string",
+                       "description": "Nombre del ejercicio"
+                     },
+                     "setsCompleted": {
+                       "type": "number",
+                       "minimum": 0,
+                       "maximum": 50,
+                       "description": "Series completadas"
+                     },
+                     "notes": {
+                       "type": "string",
+                       "maxLength": 200,
+                       "description": "Notas del ejercicio"
+                     }
+                   }
+                 }
+               }
+             }
+           },
+           "nutritionLog": {
+             "type": "object",
+             "properties": {
+               "mealsLogged": {
+                 "type": "number",
+                 "minimum": 0,
+                 "maximum": 10,
+                 "description": "Número de comidas registradas"
+               },
+               "totalCalories": {
+                 "type": "number",
+                 "minimum": 0,
+                 "maximum": 10000,
+                 "description": "Calorías totales"
+               },
+               "totalProtein": {
+                 "type": "number",
+                 "minimum": 0,
+                 "maximum": 500,
+                 "description": "Proteína total en gramos"
+               },
+               "totalCarbs": {
+                 "type": "number",
+                 "minimum": 0,
+                 "maximum": 1000,
+                 "description": "Carbohidratos totales en gramos"
+               },
+               "totalFat": {
+                 "type": "number",
+                 "minimum": 0,
+                 "maximum": 300,
+                 "description": "Grasas totales en gramos"
+               }
+             }
+           },
+           "createdAt": {
+             "type": "string",
+             "format": "date-time"
+           },
+           "updatedAt": {
+             "type": "string",
+             "format": "date-time"
+           }
+         }
+       },
+       "ChatMessage": {
+         "type": "object",
+         "properties": {
+           "_id": {
+             "type": "string",
+             "format": "objectId",
+             "description": "ID único del mensaje"
+           },
+           "senderId": {
+             "type": "string",
+             "format": "objectId",
+             "description": "ID del remitente"
+           },
+           "receiverId": {
+             "type": "string",
+             "format": "objectId",
+             "description": "ID del destinatario"
+           },
+           "message": {
+             "type": "string",
+             "maxLength": 2000,
+             "description": "Contenido del mensaje"
+           },
+           "messageType": {
+             "type": "string",
+             "enum": ["text", "image", "file"],
+             "description": "Tipo de mensaje"
+           },
+           "attachments": {
+             "type": "array",
+             "items": {
+               "type": "string",
+               "format": "uri"
+             },
+             "description": "URLs de archivos adjuntos"
+           },
+           "isRead": {
+             "type": "boolean",
+             "description": "Estado de lectura del mensaje"
+           },
+           "readAt": {
+             "type": "string",
+             "format": "date-time",
+             "description": "Fecha de lectura"
+           },
+           "createdAt": {
+             "type": "string",
+             "format": "date-time"
+           },
+           "updatedAt": {
+             "type": "string",
+             "format": "date-time"
+           }
+         }
+       },
+       "ProgressSummary": {
+         "type": "object",
+         "properties": {
+           "totalLogs": {
+             "type": "number",
+             "description": "Número total de registros"
+           },
+           "avgWeight": {
+             "type": "number",
+             "description": "Peso promedio"
+           },
+           "avgBodyFat": {
+             "type": "number",
+             "description": "Porcentaje de grasa corporal promedio"
+           },
+           "avgMood": {
+             "type": "number",
+             "description": "Estado de ánimo promedio"
+           },
+           "avgEnergyLevel": {
+             "type": "number",
+             "description": "Nivel de energía promedio"
+           },
+           "avgSleepHours": {
+             "type": "number",
+             "description": "Horas de sueño promedio"
+           },
+           "avgWaterIntake": {
+             "type": "number",
+             "description": "Consumo de agua promedio"
+           },
+           "totalWorkouts": {
+             "type": "number",
+             "description": "Número total de entrenamientos"
+           },
+           "totalWorkoutTime": {
+             "type": "number",
+             "description": "Tiempo total de entrenamiento en minutos"
+           }
+         }
+       },
+       "ProgressStats": {
+         "type": "object",
+         "properties": {
+           "period": {
+             "type": "string",
+             "enum": ["week", "month", "year"],
+             "description": "Período de las estadísticas"
+           },
+           "weightChange": {
+             "type": "number",
+             "description": "Cambio de peso en kilogramos"
+           },
+           "bodyFatChange": {
+             "type": "number",
+             "description": "Cambio en porcentaje de grasa corporal"
+           },
+           "workoutCount": {
+             "type": "number",
+             "description": "Número de entrenamientos"
+           },
+           "totalWorkoutTime": {
+             "type": "number",
+             "description": "Tiempo total de entrenamiento en minutos"
+           },
+           "avgMood": {
+             "type": "number",
+             "description": "Estado de ánimo promedio"
+           },
+           "avgEnergyLevel": {
+             "type": "number",
+             "description": "Nivel de energía promedio"
+           }
+         }
+       },
+       "Conversation": {
+         "type": "object",
+         "properties": {
+           "partnerId": {
+             "type": "string",
+             "format": "objectId",
+             "description": "ID del usuario con quien se conversa"
+           },
+           "partnerName": {
+             "type": "string",
+             "description": "Nombre del usuario con quien se conversa"
+           },
+           "partnerProfilePicture": {
+             "type": "string",
+             "format": "uri",
+             "description": "URL de la imagen de perfil del usuario"
+           },
+           "lastMessage": {
+             "type": "string",
+             "description": "Último mensaje de la conversación"
+           },
+           "lastMessageType": {
+             "type": "string",
+             "enum": ["text", "image", "file"],
+             "description": "Tipo del último mensaje"
+           },
+           "lastMessageTime": {
+             "type": "string",
+             "format": "date-time",
+             "description": "Fecha del último mensaje"
+           },
+           "unreadCount": {
+             "type": "number",
+             "description": "Número de mensajes no leídos"
+           },
+           "isLastMessageFromMe": {
+             "type": "boolean",
+             "description": "Indica si el último mensaje es del usuario autenticado"
+           }
+         }
+       },
+       "UploadConfig": {
+         "type": "object",
+         "properties": {
+           "maxFileSize": {
+             "type": "number",
+             "description": "Tamaño máximo de archivo en bytes"
+           },
+           "allowedTypes": {
+             "type": "array",
+             "items": {
+               "type": "string"
+             },
+             "description": "Tipos de archivo permitidos"
+           },
+           "maxFiles": {
+             "type": "number",
+             "description": "Número máximo de archivos por subida"
+           }
+         }
+       }
+    }
+  },
+  "tags": [
+    {
+      "name": "Health",
+      "description": "Endpoints para verificar el estado del servidor"
+    },
+    {
+      "name": "Auth",
+      "description": "Endpoints para autenticación y gestión de usuarios"
+    },
+    {
+      "name": "Clients",
+      "description": "Gestión de clientes por parte de entrenadores"
+    },
+    {
+      "name": "Plans",
+      "description": "Gestión de planes de dieta y entrenamiento"
+    },
+    {
+      "name": "Progress",
+      "description": "Seguimiento del progreso de los usuarios"
+    },
+    {
+      "name": "Chat",
+      "description": "Sistema de mensajería entre usuarios"
+    },
+    {
+      "name": "Upload",
+      "description": "Gestión de archivos e imágenes"
+    }
+  ]
+} 

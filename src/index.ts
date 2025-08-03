@@ -27,6 +27,7 @@ import planRoutes from './routes/plans';
 import progressRoutes from './routes/progress';
 import chatRoutes from './routes/chat';
 import uploadRoutes from './routes/upload';
+import docsRoutes from './routes/docs';
 
 // Importar servicio de WebSocket
 import SocketService from './utils/socketService';
@@ -110,6 +111,7 @@ app.use('/api/plans', planRoutes);
 app.use('/api/progress', progressRoutes);
 app.use('/api/chat', chatRoutes);
 app.use('/api/upload', uploadRoutes);
+app.use('/api/docs', docsRoutes);
 
 // Ruta raíz
 app.get('/', (req, res) => {
@@ -119,6 +121,7 @@ app.get('/', (req, res) => {
     data: {
       version: '1.0.0',
       documentation: '/api/docs',
+      swaggerJson: '/api/docs/swagger.json',
       health: '/api/health',
       endpoints: {
         auth: '/api/auth',

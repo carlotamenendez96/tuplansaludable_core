@@ -1,0 +1,335 @@
+{
+  "_id": {
+    "$oid": "68812787d6a07da255dfc990"
+  },
+  "userId": {
+    "$oid": "68812786d6a07da255dfc97c"
+  },
+  "trainerId": {
+    "$oid": "68812786d6a07da255dfc973"
+  },
+  "title": "Plan de Entrenamiento Iniciación - Cliente Ejemplo",
+  "description": "Plan de entrenamiento para principiantes enfocado en mejorar la condición física general",
+  "workouts": [
+    {
+      "name": "Entrenamiento de Fuerza Básico",
+      "exercises": [
+        {
+          "exercise": {
+            "name": "Sentadillas",
+            "type": "STRENGTH",
+            "description": "Ejercicio fundamental para piernas y glúteos",
+            "instructions": [
+              "Ponte de pie con los pies separados al ancho de los hombros",
+              "Baja como si te sentaras en una silla",
+              "Mantén el pecho arriba y las rodillas alineadas con los pies",
+              "Vuelve a la posición inicial"
+            ],
+            "targetMuscles": ["Cuádriceps", "Glúteos", "Isquiotibiales"],
+            "equipment": ["Peso corporal"],
+            "difficulty": "beginner"
+          },
+          "sets": [
+            {
+              "reps": 12,
+              "restTime": 60
+            },
+            {
+              "reps": 12,
+              "restTime": 60
+            },
+            {
+              "reps": 10,
+              "restTime": 60
+            }
+          ],
+          "notes": "Enfócate en la técnica correcta"
+        },
+        {
+          "exercise": {
+            "name": "Flexiones de pecho",
+            "type": "STRENGTH",
+            "description": "Ejercicio para pecho, hombros y tríceps",
+            "instructions": [
+              "Colócate en posición de plancha",
+              "Baja el cuerpo hasta que el pecho toque el suelo",
+              "Empuja hacia arriba hasta la posición inicial"
+            ],
+            "targetMuscles": ["Pecho", "Hombros", "Tríceps"],
+            "equipment": ["Peso corporal"],
+            "difficulty": "beginner"
+          },
+          "sets": [
+            {
+              "reps": 8,
+              "restTime": 60
+            },
+            {
+              "reps": 8,
+              "restTime": 60
+            },
+            {
+              "reps": 6,
+              "restTime": 60
+            }
+          ],
+          "notes": "Si es muy difícil, puedes hacerlas de rodillas"
+        },
+        {
+          "exercise": {
+            "name": "Plancha",
+            "type": "STRENGTH",
+            "description": "Ejercicio isométrico para core",
+            "instructions": [
+              "Colócate en posición de plancha",
+              "Mantén el cuerpo recto de la cabeza a los pies",
+              "Aguanta la posición"
+            ],
+            "targetMuscles": ["Core", "Abdominales", "Lumbares"],
+            "equipment": ["Peso corporal"],
+            "difficulty": "beginner"
+          },
+          "sets": [
+            {
+              "duration": 30,
+              "restTime": 60
+            },
+            {
+              "duration": 30,
+              "restTime": 60
+            },
+            {
+              "duration": 30,
+              "restTime": 60
+            }
+          ],
+          "notes": "Mantén la respiración constante"
+        }
+      ],
+      "estimatedDuration": 45,
+      "difficulty": "beginner",
+      "notes": "Entrenamiento básico de fuerza para principiantes"
+    },
+    {
+      "name": "Entrenamiento Cardio",
+      "exercises": [
+        {
+          "exercise": {
+            "name": "Burpees",
+            "type": "CARDIO",
+            "description": "Ejercicio completo que combina fuerza y cardio",
+            "instructions": [
+              "Ponte de pie",
+              "Baja a posición de sentadilla",
+              "Coloca las manos en el suelo",
+              "Salta hacia atrás a posición de plancha",
+              "Haz una flexión",
+              "Salta hacia adelante",
+              "Salta hacia arriba"
+            ],
+            "targetMuscles": ["Todo el cuerpo"],
+            "equipment": ["Peso corporal"],
+            "difficulty": "beginner"
+          },
+          "sets": [
+            {
+              "reps": 5,
+              "restTime": 90
+            },
+            {
+              "reps": 5,
+              "restTime": 90
+            },
+            {
+              "reps": 5,
+              "restTime": 90
+            }
+          ],
+          "notes": "Ejercicio intenso, toma descansos si es necesario"
+        },
+        {
+          "exercise": {
+            "name": "Mountain climbers",
+            "type": "CARDIO",
+            "description": "Ejercicio dinámico para cardio y core",
+            "instructions": [
+              "Colócate en posición de plancha",
+              "Lleva una rodilla hacia el pecho",
+              "Alterna rápidamente entre piernas"
+            ],
+            "targetMuscles": ["Core", "Cardio"],
+            "equipment": ["Peso corporal"],
+            "difficulty": "beginner"
+          },
+          "sets": [
+            {
+              "duration": 30,
+              "restTime": 60
+            },
+            {
+              "duration": 30,
+              "restTime": 60
+            },
+            {
+              "duration": 30,
+              "restTime": 60
+            }
+          ],
+          "notes": "Mantén el core activo durante todo el ejercicio"
+        },
+        {
+          "exercise": {
+            "name": "Jumping jacks",
+            "type": "CARDIO",
+            "description": "Ejercicio clásico de cardio",
+            "instructions": [
+              "Ponte de pie con los brazos a los lados",
+              "Salta separando las piernas y levantando los brazos",
+              "Vuelve a la posición inicial"
+            ],
+            "targetMuscles": ["Cardio", "Coordinación"],
+            "equipment": ["Peso corporal"],
+            "difficulty": "beginner"
+          },
+          "sets": [
+            {
+              "duration": 45,
+              "restTime": 60
+            },
+            {
+              "duration": 45,
+              "restTime": 60
+            },
+            {
+              "duration": 45,
+              "restTime": 60
+            }
+          ],
+          "notes": "Ejercicio de bajo impacto pero efectivo"
+        }
+      ],
+      "estimatedDuration": 30,
+      "difficulty": "beginner",
+      "notes": "Entrenamiento cardio para mejorar la resistencia"
+    },
+    {
+      "name": "Entrenamiento de Flexibilidad",
+      "exercises": [
+        {
+          "exercise": {
+            "name": "Estiramiento de isquiotibiales",
+            "type": "FLEXIBILITY",
+            "description": "Estiramiento para la parte posterior de las piernas",
+            "instructions": [
+              "Siéntate en el suelo con las piernas extendidas",
+              "Inclínate hacia adelante desde las caderas",
+              "Mantén la posición por 30 segundos"
+            ],
+            "targetMuscles": ["Isquiotibiales"],
+            "equipment": ["Ninguno"],
+            "difficulty": "beginner"
+          },
+          "sets": [
+            {
+              "duration": 30,
+              "restTime": 30
+            },
+            {
+              "duration": 30,
+              "restTime": 30
+            }
+          ],
+          "notes": "No rebotes, mantén el estiramiento suave"
+        },
+        {
+          "exercise": {
+            "name": "Estiramiento de cuádriceps",
+            "type": "FLEXIBILITY",
+            "description": "Estiramiento para la parte frontal de las piernas",
+            "instructions": [
+              "De pie, dobla una rodilla hacia atrás",
+              "Agarra el pie con la mano del mismo lado",
+              "Mantén la posición por 30 segundos"
+            ],
+            "targetMuscles": ["Cuádriceps"],
+            "equipment": ["Ninguno"],
+            "difficulty": "beginner"
+          },
+          "sets": [
+            {
+              "duration": 30,
+              "restTime": 30
+            },
+            {
+              "duration": 30,
+              "restTime": 30
+            }
+          ],
+          "notes": "Mantén la rodilla alineada con la cadera"
+        },
+        {
+          "exercise": {
+            "name": "Estiramiento de hombros",
+            "type": "FLEXIBILITY",
+            "description": "Estiramiento para mejorar la movilidad de hombros",
+            "instructions": [
+              "Lleva un brazo hacia el pecho",
+              "Usa el otro brazo para presionar suavemente",
+              "Mantén la posición por 30 segundos"
+            ],
+            "targetMuscles": ["Hombros", "Pecho"],
+            "equipment": ["Ninguno"],
+            "difficulty": "beginner"
+          },
+          "sets": [
+            {
+              "duration": 30,
+              "restTime": 30
+            },
+            {
+              "duration": 30,
+              "restTime": 30
+            }
+          ],
+          "notes": "Estiramiento suave para mejorar la movilidad"
+        }
+      ],
+      "estimatedDuration": 20,
+      "difficulty": "beginner",
+      "notes": "Sesión de flexibilidad para recuperación y movilidad"
+    }
+  ],
+  "schedule": [
+    {
+      "dayOfWeek": 1,
+      "workoutIndex": 0
+    },
+    {
+      "dayOfWeek": 3,
+      "workoutIndex": 1
+    },
+    {
+      "dayOfWeek": 5,
+      "workoutIndex": 0
+    },
+    {
+      "dayOfWeek": 6,
+      "workoutIndex": 2
+    }
+  ],
+  "startDate": {
+    "$date": "2025-07-23T18:18:47.062Z"
+  },
+  "endDate": {
+    "$date": "2025-08-22T18:18:47.062Z"
+  },
+  "isActive": true,
+  "notes": "Plan de iniciación para mejorar la condición física general",
+  "createdAt": {
+    "$date": "2025-07-23T18:18:47.063Z"
+  },
+  "updatedAt": {
+    "$date": "2025-07-23T18:18:47.063Z"
+  },
+  "__v": 0
+} 
